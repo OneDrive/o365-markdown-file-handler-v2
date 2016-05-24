@@ -1,0 +1,39 @@
+﻿@model MarkdownFileHandler.Models.HomeModel
+@{
+    ViewBag.Title = "Home Page";
+}
+
+<div class="jumbotron">
+    <h1>Markdown File Handler</h1>
+    <p class="lead">To connect your OneDrive for Business and SharePoint environment to this file handler example, sign in using the link in the top right corner.</p>
+</div>
+
+<div class="row">
+    <div class="col-md-4">
+        <h2>Getting started</h2>
+        <p>
+            This sample provides a few examples of how you can integrate your application with OneDrive for Business and SharePoint through File Handlers.
+            This file handler implements a custom set of actions on files that allow you to convert an Office document to PDF, merge a collection of files into a ZIP file, and preview Markdown format text files.
+        </p>
+    </div>
+    @if (!string.IsNullOrEmpty(Model.SignInName))
+    {
+        <div class="col-md-4">
+            <h2>Signed In</h2>
+            <p>Welcome @Model.DisplayName. To try out Markdown Editor, hop over to <a href="@Model.OneDriveUrl">your OneDrive and try it out!</a></p>
+            <p><a class="btn btn-default" href="@Model.OneDriveUrl">Try it in OneDrive &raquo;</a></p>
+        </div>
+    }
+    else
+    {
+        <div class="col-md-4">
+            <h2>User Sign-In</h2>
+            <p>@Html.ActionLink("Sign in as a user", "SignIn", "Account") to enable the file handler extension on your account.</p>
+      </div>
+    }
+
+    <div class="col-md-4">
+        <h2>Admin Sign-In</h2>
+        <p>@Html.ActionLink("Sign in as an admin", "SignInAdmin", "Account") to enable the file handler extension for your entire organization.</p>
+    </div>
+</div>

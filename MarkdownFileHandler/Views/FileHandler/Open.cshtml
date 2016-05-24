@@ -1,0 +1,110 @@
+﻿@model MarkdownFileHandler.Models.MarkdownFileModel
+@{
+    ViewBag.Title = Model.Filename + " - Markdown Editor";
+    Layout = "~/Views/Shared/_LayoutFileHandler.cshtml";
+}
+@section Head
+{
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/simplemde/latest/simplemde.min.css">
+    <script src="https://cdn.jsdelivr.net/simplemde/latest/simplemde.min.js"></script>
+}
+
+@section ToolbarButtons
+{
+    <li><a href="#" onclick="saveChangesToHost()">Save</a></li>
+    <li><a href="#" onclick="renameFile()">Rename</a></li>
+    <li><a href="#" onclick="shareLinkToFile()">Get link</a></li>
+    <li><a href="#" onclick="closeEditor()">Close</a></li>
+}
+
+@if (!string.IsNullOrEmpty(Model.ErrorMessage))
+{
+    <h1>Error occured</h1>
+    <p>An error occured: @Model.ErrorMessage</p>
+}
+
+@using (Html.BeginForm())
+{
+    if (null != Model.ActivationParameters)
+    {
+        @Html.Hidden("itemUrl", Model.ActivationParameters.ItemUrls.First());
+        @Html.Hidden("filename", Model.Filename);
+        @Html.TextArea("content", Model.MarkdownFileContent);
+    }
+}
+<script>
+    // Activate the Markdown Editor component on the content textArea added above
+    var simplemde = new SimpleMDE({
+        element: document.getElementById("content"),
+        forceSync: true
+    });
+
+    // Make sure we get a notification when the editor contents are changed
+    var hasUnsavedChanges = false;
+    $("input#content").bind("input change", function () {
+      hasUnsavedChanges = true;
+    });
+
+    function saveChangesToHost()
+    {
+        var itemUrl = $('#itemUrl').val();
+        var url = "/api/editor/saveContentChanges?fileUrl=" + encodeURIComponent(itemUrl)
+        var contents = $('#content').val();
+        var body = { MarkdownText: contents };
+        $.ajax({
+            method: "POST",
+            data: JSON.stringify(body),
+            processData: false,
+            contentType: "application/json; charset=UTF-8",
+            url: url,
+            success: function (data, status, xhr) {
+                if (!data.Success) {
+                    window.alert("An error occured saving this file: " + data.Error);
+                } else {
+                    hasUnsavedChanges = false;
+                    window.alert("Saved changes.");
+                }
+            },
+            error: function (xhr, status, errorThrown) {
+                window.alert("An error occured saving this file: " + errorThrown);
+            }
+        });
+    }
+
+    function closeEditor() {
+      // TODO: Prompt to save changes
+      window.close();
+    }
+
+    function renameFile() {
+        var newName = window.prompt("Rename", $("#filename").val());
+        if (newName != null && newName.length > 0) {
+            var itemUrl = $('#itemUrl').val();
+            var url = "/api/editor/renameFile?fileUrl=" + encodeURIComponent(itemUrl) + "&filename=" + encodeURIComponent(newName);
+            $.post(url, null, function (data, status, xhr) {
+                if (!data.Success) {
+                    window.alert("An error occured renaming this file: " + data.Error);
+                } else {
+                    $("#filename").val(data.Filename);
+                    window.alert("File renamed to " + data.Filename);
+                }
+            });
+        }
+    }
+
+    function shareLinkToFile() {
+        var itemUrl = $('#itemUrl').val();
+        var url = "/api/editor/createSharingLink?fileUrl=" + encodeURIComponent(itemUrl) + "&type=view&scope=organization";
+        $.post(url, null, function (data, status, xhr) {
+            if (!data.Success) {
+                window.alert("An error occured creating a sharing link: " + data.Error);
+            } else {
+                window.prompt("View-only sharing link", data.SharingUrl);
+            }
+        });
+    }
+</script>
+
+
+
+

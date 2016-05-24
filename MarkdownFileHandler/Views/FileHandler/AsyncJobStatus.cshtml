@@ -1,0 +1,20 @@
+﻿@model MarkdownFileHandler.Models.AsyncActionModel
+
+@Html.Hidden("jobState", Model.Status.State)
+
+<div><b>Current State:</b>&nbsp;@Model.Status.State</div>
+<div><b>Job ID:</b>&nbsp;@Model.JobIdentifier</div>
+
+@if (Model.Status.ResultWebUrl != null)
+{
+    <div><a href="@Model.Status.ResultWebUrl">View the converted file</a></div>
+}
+@if (Model.Status.Error != null)
+{
+    <div>An error occured converting the file to PDF: @Model.Status.Error.Message</div>
+    <h3>Activation parameters</h3>
+    foreach(var item in Model.Status.OriginalParameters)
+    {
+        <div><strong>@item.Key</strong>: @item.Value</div>
+    }
+}

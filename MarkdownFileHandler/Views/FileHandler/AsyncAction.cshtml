@@ -1,0 +1,29 @@
+﻿@model MarkdownFileHandler.Models.AsyncActionModel
+@{
+    Layout = "~/Views/Shared/_LayoutAsyncJob.cshtml";
+    ViewBag.Title = Model.Title;
+}
+
+<h2>@Model.Title</h2>
+
+<!-- Loading animation -->
+<div class="windows8" id="divLoadingSpinner"><div class="wBall" id="wBall_1"><div class="wInnerBall"></div></div><div class="wBall" id="wBall_2"><div class="wInnerBall"></div></div><div class="wBall" id="wBall_3"><div class="wInnerBall"></div></div><div class="wBall" id="wBall_4"><div class="wInnerBall"></div></div><div class="wBall" id="wBall_5"><div class="wInnerBall"></div></div></div>
+
+<div id="asyncResults">
+  @{ Html.RenderPartial("AsyncJobStatus", Model); }
+</div>
+
+<script type="text/javascript">
+  function refreshStatus() {
+    $("#asyncResults").load('@(Url.Action("GetAsyncJobStatus", "FileHandler", null, Request.Url.Scheme))?identifier=@Model.JobIdentifier', null, function () {
+      var state = $("input#jobState").val();
+      if (state == "Running" || state == "NotStarted" ) {
+        $("#divLoadingSpinner").show();
+        setTimeout(refreshStatus, 100);
+      } else {
+        $("#divLoadingSpinner").hide();
+      }
+    });
+  }
+  refreshStatus();
+</script>

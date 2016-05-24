@@ -1,0 +1,14 @@
+﻿@{
+    Layout = "~/Views/Shared/_LayoutFileHandler.cshtml";
+    ViewBag.Title = "Preview";
+    ViewBag.HideNavigationBar = true;
+}
+
+@Model.HtmlFileContent
+
+@if (Model.ErrorMessage != null)
+{
+
+    <h4>Unable to generate a preview</h4>
+    <p>@Model.ErrorMessage</p>
+}

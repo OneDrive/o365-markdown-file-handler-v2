@@ -1,0 +1,40 @@
+{
+  "odata.metadata": "https://graph.windows.net/myorganization/$metadata#Collection(Microsoft.DirectoryServices.AddIn)",
+  "value": [
+    {
+      "type": "FileHandler",
+      "properties": [
+        {
+          "key": "actions",
+          "value": "[{\"type\":\"custom\",\"displayName\":\"Add to ZIP file - debug\",\"url\":\"https://localhost:44362/filehandler/compressFiles\",\"availableOn\":{\"file\":{},\"folder\":{},\"allowMultiSelect\":true}}]"
+        },
+        {
+          "key": "version",
+          "value": "2"
+        }
+      ]
+    },
+    {
+      "type": "FileHandler",
+      "properties": [
+        {
+          "key": "version",
+          "value": "2"
+        },
+        {
+          "key": "fileTypeDisplayName",
+          "value": "Markdown (debug)"
+        },
+        {
+          "key": "fileTypeIconUrl",
+          "value": "https://localhost:44362/images/markdown.png"
+        },
+        {
+          "key": "actions",
+          "value": "[{\"type\":\"newFile\",\"url\":\"https://localhost:44362/filehandler/newFile\",\"availableOn\":{\"file\":{\"extensions\":[\".gfm\"]}}},{\"type\":\"open\",\"url\":\"https://localhost:44362/filehandler/open\",\"availableOn\":{\"file\":{\"extensions\":[\".gfm\"]}}},{\"type\":\"preview\",\"url\":\"https://localhost:44362/filehandler/preview\",\"availableOn\":{\"file\":{\"extensions\":[\".gfm\"]}}}]"
+        }
+      ]
+    }
+  ]
+}
+
