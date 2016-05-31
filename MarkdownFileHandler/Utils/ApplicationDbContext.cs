@@ -17,12 +17,21 @@ namespace MarkdownFileHandler
         public DbSet<UserTokenCache> UserTokenCacheList { get; set; }
     }
 
-    public class UserTokenCache
+
+    public interface IUserTokenCacheEntry
+    {
+        int UserTokenCacheId { get; set; }
+        string WebUserUniqueId { get; set; }
+        byte[] CacheBits { get; set; }
+        DateTime LastWrite { get; set; }
+    }
+
+    public class UserTokenCache : IUserTokenCacheEntry
     {
         [Key]
         public int UserTokenCacheId { get; set; }
-        public string webUserUniqueId { get; set; }
-        public byte[] cacheBits { get; set; }
+        public string WebUserUniqueId { get; set; }
+        public byte[] CacheBits { get; set; }
         public DateTime LastWrite { get; set; }
     }
 }
