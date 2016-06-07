@@ -151,7 +151,17 @@ namespace MarkdownFileHandler.Controllers
             // Convert the stream into text for rendering
             StreamReader reader = new StreamReader(fileContentStream);
             var fileContentString = await reader.ReadToEndAsync();
-            return new FileHandlerModel(input, fileContentString, null);
+
+            var htmlContent = ConvertMarkdownToHtml(fileContentString);
+
+            return new FileHandlerModel(input, htmlContent, null);
+        }
+
+
+        private string ConvertMarkdownToHtml(string markdown)
+        {
+            var file = new MarkdownFile(markdown);
+            return file.TransformToHtml();
         }
 
         /// <summary>

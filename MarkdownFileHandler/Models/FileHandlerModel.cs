@@ -11,12 +11,12 @@ namespace MarkdownFileHandler.Models
         public FileHandlerModel(FileHandlerActivationParameters activationParameters, string fileContent, MvcHtmlString errorMessage)
         {
             this.ActivationParameters = activationParameters;
-            this.FileContent = fileContent;
+            this.FileContent = new MvcHtmlString(fileContent);
             this.ErrorMessage = errorMessage;
         }
 
         public FileHandlerActivationParameters ActivationParameters { get; set; }
-        public string FileContent { get; set; }
+        public MvcHtmlString FileContent { get; set; }
         public MvcHtmlString ErrorMessage { get; set; }
     }
 }
