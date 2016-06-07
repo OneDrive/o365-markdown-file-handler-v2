@@ -1,13 +1,13 @@
-﻿
-@{
+﻿@{
+    Layout = "~/Views/Shared/_LayoutFileHandler.cshtml";
     ViewBag.Title = "Preview";
     ViewBag.HideNavigationBar = true;
 }
+@Model.FileContent
 
 @if (Model.ErrorMessage != null)
 {
     <h4>@Model.ErrorMessage</h4>
 }
 
-@Model.FileContent
 
