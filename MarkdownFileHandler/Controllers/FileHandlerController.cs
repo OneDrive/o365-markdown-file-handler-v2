@@ -1,4 +1,5 @@
 ﻿using MarkdownFileHandler.Models;
+using MarkdownFileHandler.Utils;
 using Microsoft.IdentityModel.Clients.ActiveDirectory;
 using System;
 using System.Collections.Generic;
@@ -76,7 +77,7 @@ namespace MarkdownFileHandler.Controllers
                 var userObjectId = ClaimsPrincipal.Current.FindFirst("http://schemas.microsoft.com/identity/claims/objectidentifier").Value;
                 var tenantId = ClaimsPrincipal.Current.FindFirst("http://schemas.microsoft.com/identity/claims/tenantid").Value;
 
-                authContext = new AuthenticationContext(SettingsHelper.Authority, new ADALTokenCache(signInUserId));
+                authContext = new AuthenticationContext(SettingsHelper.Authority, new AzureTableTokenCache(signInUserId));
                 AuthenticationResult authResult = await authContext.AcquireTokenSilentAsync(resourceId, new ClientCredential(SettingsHelper.ClientId, SettingsHelper.AppKey), new UserIdentifier(userObjectId, UserIdentifierType.UniqueId));
                 accessToken = authResult.AccessToken;
 
