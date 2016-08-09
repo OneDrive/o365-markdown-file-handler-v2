@@ -11,7 +11,8 @@ namespace MarkdownFileHandler.Models
         public FileHandlerModel(FileHandlerActivationParameters activationParameters, string fileContent, MvcHtmlString errorMessage)
         {
             this.ActivationParameters = activationParameters;
-            this.FileContent = new MvcHtmlString(fileContent);
+            if (null != FileContent)
+                this.FileContent = new MvcHtmlString(fileContent);
             this.ErrorMessage = errorMessage;
         }
 

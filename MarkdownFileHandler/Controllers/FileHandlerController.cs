@@ -50,6 +50,19 @@ namespace MarkdownFileHandler.Controllers
             return View(await GetFileHandlerModelAsync(input));
         }
 
+
+        public async Task<ActionResult> ConvertToPDF()
+        {
+            var input = LoadActivationParameters();
+            return View(new FileHandlerModel(input, null, null));
+        }
+
+        public async Task<ActionResult> compressFiles()
+        {
+            var input = LoadActivationParameters();
+            return View(new FileHandlerModel(input, null, null));
+        }
+
         public async Task<ActionResult> NewFile()
         {
             var input = LoadActivationParameters();
