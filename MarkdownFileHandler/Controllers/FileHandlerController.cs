@@ -14,7 +14,8 @@ using System.Web.Mvc;
 
 namespace MarkdownFileHandler.Controllers
 {
-    
+
+    [Authorize]
     public class FileHandlerController : Controller
     {
 
