@@ -14,6 +14,7 @@ using System.Web.Mvc;
 
 namespace MarkdownFileHandler.Controllers
 {
+
     [Authorize]
     public class FileHandlerController : Controller
     {
@@ -57,7 +58,7 @@ namespace MarkdownFileHandler.Controllers
             return View(new FileHandlerModel(input, null, null));
         }
 
-        public async Task<ActionResult> compressFiles()
+        public async Task<ActionResult> CompressFiles()
         {
             var input = LoadActivationParameters();
             return View(new FileHandlerModel(input, null, null));

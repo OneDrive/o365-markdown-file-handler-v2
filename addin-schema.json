@@ -1,0 +1,58 @@
+{
+  "value": [
+    {
+      "id": "49dde234-cd83-4cfe-23b4-be5437b01298",
+      "type": "FileHandler",
+      "properties": [
+        {
+          "key": "extension",
+          "value": "*"
+        },
+        {
+          "key": "actions",
+          "value": "{\"actions\":[{\"title\":\"Convert to PDF\",\"url\":\"https://markdownfilehandler.azurewebsites.net/filehandler/convertToPdf\",\"platform\":[\"web\"],\"selection\":[\"single\"]},{\"title\":\"Add to ZIP file\",\"url\":\"https://markdownfilehandler.azurewebsites.net/filehandler/compressFiles\",\"platform\":[\"web\"],\"selection\":[\"multiple\",\"none\"]}]}"
+        }
+      ]
+    },
+    {
+      "id": "49dde234-cd83-4cfe-23b4-be5437b01299",
+      "type": "FileHandler",
+      "properties": [
+        {
+          "key": "extension", "value": "pdf"
+        },
+        {
+          "key": "openUrl", "value": "https://markdownfilehandler.azurewebsites.net/filehandler/open"
+        },
+        {
+          "key": "newFileUrl", "value": "https://markdownfilehandler.azurewebsites.net/filehandler/newfile"
+        }
+      ]
+    },
+    {
+      "id": "49dde234-cd83-4cfe-23b4-be5437b01241",
+      "type": "FileHandler",
+      "properties": [
+        {
+          "key": "extension", "value": "mdown"
+        },
+        {
+          "key": "fileIcon", "value": "https://markdownfilehandler.azurewebsites.net/images/markdown.png"
+        },
+        {
+          "key": "openUrl", "value": "https://markdownfilehandler.azurewebsites.net/filehandler/open"
+        },
+        {
+          "key": "previewUrl", "value": "https://markdownfilehandler.azurewebsites.net/filehandler/preview"
+        },
+        {
+          "key": "newFileUrl", "value": "https://markdownfilehandler.azurewebsites.net/filehandler/newfile"
+        },
+        {
+          "key": "fileTypeName", "value": "Markdown Text File"
+        }
+
+      ]
+    }
+  ]
+}
