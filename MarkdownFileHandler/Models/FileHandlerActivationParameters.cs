@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Text;
+using System.Web;
 
 namespace MarkdownFileHandler.Models
 {
@@ -66,7 +67,7 @@ namespace MarkdownFileHandler.Models
                 StringBuilder sb = new StringBuilder();
                 foreach(var p in OtherValues.Keys)
                 {
-                    sb.Append($"<b>{p}:</b>&nbsp;\"{OtherValues[p]}\"<br />");
+                    sb.Append($"<b>{HttpUtility.HtmlEncode(p)}:</b>&nbsp;\"{HttpUtility.HtmlEncode(OtherValues[p])}\"<br />");
                 }
 
                 return new System.Web.Mvc.MvcHtmlString(sb.ToString());
