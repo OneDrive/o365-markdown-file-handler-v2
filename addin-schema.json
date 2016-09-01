@@ -6,7 +6,7 @@
       "properties": [
         {
           "key": "extension",
-          "value": "*"
+          "value": "docx;pdf;mdown;md;xlsx;pptx"
         },
         {
           "key": "actions",
