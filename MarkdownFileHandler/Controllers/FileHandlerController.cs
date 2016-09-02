@@ -10,12 +10,13 @@ using System.Security.Authentication;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using System.Web;
+using System.Web.Hosting;
 using System.Web.Mvc;
 
 namespace MarkdownFileHandler.Controllers
 {
 
-    [Authorize]
+    //[Authorize]
     public class FileHandlerController : Controller
     {
 
@@ -52,10 +53,19 @@ namespace MarkdownFileHandler.Controllers
         }
 
 
-        public async Task<ActionResult> ConvertToPDF()
+        public ActionResult ConvertToPDF()
         {
             var input = LoadActivationParameters();
-            return View(new FileHandlerModel(input, null, null));
+
+            FileHandlerActions.PdfConverterJob job = new FileHandlerActions.PdfConverterJob();
+            HostingEnvironment.QueueBackgroundWorkItem(ct => job.BeginConvertToPdf(input.ItemUrl));
+            return View(new AsyncActionModel { JobIdentifier = job.Id, Status = job.Status });
+        }
+
+        public ActionResult GetAsyncJobStatus(string identifier)
+        {
+            var job = FileHandlerActions.JobTracker.GetJob(identifier);
+            return View("AsyncJobStatus", new AsyncActionModel { JobIdentifier = identifier, Status = job });
         }
 
         public async Task<ActionResult> CompressFiles()

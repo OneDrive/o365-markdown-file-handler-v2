@@ -1,0 +1,28 @@
+﻿@model MarkdownFileHandler.Models.AsyncActionModel
+
+<div><b>Current State:</b>&nbsp;@Model.Status.State</div>
+<div><b>Job ID:</b>&nbsp;@Model.JobIdentifier</div>
+
+@if (Model.Status.State == FileHandlerActions.JobState.Running)
+{
+    <!-- Loading animation -->
+    <div class="windows8" id="divLoadingSpinner"><div class="wBall" id="wBall_1"><div class="wInnerBall"></div></div><div class="wBall" id="wBall_2"><div class="wInnerBall"></div></div><div class="wBall" id="wBall_3"><div class="wInnerBall"></div></div><div class="wBall" id="wBall_4"><div class="wInnerBall"></div></div><div class="wBall" id="wBall_5"><div class="wInnerBall"></div></div></div>
+    <script type="text/javascript">
+        refreshTimerId = setTimeout(refreshStatus, 100);
+    </script>
+}
+else
+{
+ <script type="text/javascript">
+    clearTimeout(refreshTimerId);
+ </script>
+}
+
+@if (Model.Status.ResultWebUrl != null)
+{
+    <div><a href="@Model.Status.ResultWebUrl">View the converted file</a></div>
+}
+@if (Model.Status.Error != null)
+{
+    <div>An error occured converting the file to PDF: @Model.Status.Error.Message</div>
+}

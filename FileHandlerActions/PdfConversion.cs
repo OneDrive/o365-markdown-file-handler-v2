@@ -19,15 +19,20 @@ namespace FileHandlerActions
         /// </summary>
         /// <param name="sourceFileUrl"></param>
         /// <returns></returns>
-        public async Task ConvertFileToPdfAsync(string oneDriveApiSourceUrl, string accessToken = null)
+        public async Task<string> ConvertFileToPdfAsync(string oneDriveApiSourceUrl, string accessToken = null)
         {
             var baseUrl = ParseBaseUrl(oneDriveApiSourceUrl);
+            if (string.IsNullOrEmpty(accessToken))
+            {
+                // Parse out the access_token value from the URL, if one exists
+                accessToken = ParseAccessToken(oneDriveApiSourceUrl);
+            }
 
             // Make an HTTP GET request to oneDriveApiSourceUrl to get item metadata (Microsoft.OneDrive.Sdk.Item)
             Microsoft.OneDrive.Sdk.Item sourceItem = null;
             try
             {
-                sourceItem = await GetMetadataForUrlAsync<Microsoft.OneDrive.Sdk.Item>(oneDriveApiSourceUrl);
+                sourceItem = await GetMetadataForUrlAsync<Microsoft.OneDrive.Sdk.Item>(oneDriveApiSourceUrl, accessToken);
             }
             catch (Exception ex)
             {
@@ -48,7 +53,7 @@ namespace FileHandlerActions
             try
             {
                 var pdfStreamUrl = baseUrl + $"/drives/{sourceItem.ParentReference.DriveId}/items/{sourceItem.Id}/content?format=pdf";
-                pdfStream = await GetStreamContentForUrlAsync(pdfStreamUrl);
+                pdfStream = await GetStreamContentForUrlAsync(pdfStreamUrl, accessToken);
             }
             catch (Exception ex)
             {
@@ -59,12 +64,21 @@ namespace FileHandlerActions
             // Save the PDF file back to the server in the same folder, but with a unique name
             try
             {
-                await UploadFileFromStreamAsync(pdfStream, baseUrl, sourceItem.ParentReference, Path.GetFileNameWithoutExtension(originalFilename) + ".pdf");
+                var uploadedItem = await UploadFileFromStreamAsync(pdfStream, baseUrl, sourceItem.ParentReference, Path.GetFileNameWithoutExtension(originalFilename) + ".pdf", accessToken);
+                return uploadedItem.WebUrl;
             }
             catch (Exception ex)
             {
                 throw new ConverterException(ConverterException.Reason.UploadError, ex);
             }
+        }
+
+        private string ParseAccessToken(string oneDriveApiSourceUrl)
+        {
+            UriBuilder builder = new UriBuilder(oneDriveApiSourceUrl);
+            var queryString = builder.Query;
+            var values = HttpUtility.ParseQueryString(queryString);
+            return values["access_token"];
         }
 
         private async Task<Microsoft.OneDrive.Sdk.Item> UploadFileFromStreamAsync(Stream fileStream, string baseUrl, ItemReference folder, string filename, string accessToken = null)
@@ -99,7 +113,7 @@ namespace FileHandlerActions
         /// <returns></returns>
         private string ParseBaseUrl(string oneDriveApiSourceUrl)
         {
-            var trimPoint = oneDriveApiSourceUrl.IndexOf("/drives/");
+            var trimPoint = oneDriveApiSourceUrl.IndexOf("/drive");
             return oneDriveApiSourceUrl.Substring(0, trimPoint);
         }
 

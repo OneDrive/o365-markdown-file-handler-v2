@@ -1,0 +1,33 @@
+﻿<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <title>Invoke File Handler</title>
+</head>
+<body>
+    <form action="/filehandler/converttopdf" method="post" target="_blank" id="post1">
+    
+        <table border="0">
+            <tr>
+                <td>Culture Name</td>
+                <td><input type="text" name="cultureName" value="en-us" /></td>
+            </tr>
+            <tr>
+                <td>Client</td>
+                <td><input type="text" name="client" value="SharePoint" /></td>
+            </tr>
+            <tr>
+                <td>Item URL</td>
+                <td><input type="text" name="item" value="https://microsoft-my.sharepoint.com/_api/v2.0/drive/root:/Sample%20Document.docx" style="width: 724px" /></td>
+            </tr>
+            <tr>
+                <td>User Id</td>
+                <td><input type="text" name="userId" value="rgregg@microsoft.com" style="width: 320px" /></td>
+            </tr>
+            <tr>
+                <td colspan="2"><input type="submit" value="POST!" /></td>
+            </tr>
+        </table>
+
+    </form>
+</body>
+</html>
