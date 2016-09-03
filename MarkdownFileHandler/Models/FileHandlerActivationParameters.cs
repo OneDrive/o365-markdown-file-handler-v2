@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Text;
 using System.Web;
@@ -7,8 +8,11 @@ namespace MarkdownFileHandler.Models
 {
     public class FileHandlerActivationParameters
     {
+        private NameValueCollection sourceParameters;
         public FileHandlerActivationParameters(NameValueCollection collection)
         {
+
+            sourceParameters = collection;
             this.OtherValues = new Dictionary<string, string>();
             if (collection != null)
             {
@@ -49,6 +53,16 @@ namespace MarkdownFileHandler.Models
                     }
                 }
             }
+        }
+
+        internal Dictionary<string, string> ToDictionary()
+        {
+            var result = new Dictionary<string, string>();
+            foreach(var key in sourceParameters.AllKeys)
+            {
+                result[key] = sourceParameters[key];
+            }
+            return result;
         }
 
         public string ResourceId { get; set; }

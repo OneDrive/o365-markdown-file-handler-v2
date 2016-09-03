@@ -60,6 +60,7 @@ namespace FileHandlerActions
         public Exception Error { get; set; }
         public string Id { get; internal set; }
         public string ResultWebUrl { get; internal set; }
+        public Dictionary<string, string> OriginalParameters { get; set; }
     }
 
     public enum JobState

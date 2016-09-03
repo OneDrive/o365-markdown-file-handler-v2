@@ -25,4 +25,9 @@ else
 @if (Model.Status.Error != null)
 {
     <div>An error occured converting the file to PDF: @Model.Status.Error.Message</div>
+    <h3>Activation parameters</h3>
+    @foreach(var item in Model.Status.OriginalParameters)
+    {
+        <div><strong>@item.Key</strong>: @item.Value</div>
+    }
 }

@@ -58,6 +58,7 @@ namespace MarkdownFileHandler.Controllers
             var input = LoadActivationParameters();
 
             FileHandlerActions.PdfConverterJob job = new FileHandlerActions.PdfConverterJob();
+            job.Status.OriginalParameters = input.ToDictionary();
             HostingEnvironment.QueueBackgroundWorkItem(ct => job.BeginConvertToPdf(input.ItemUrl));
             return View(new AsyncActionModel { JobIdentifier = job.Id, Status = job.Status });
         }
