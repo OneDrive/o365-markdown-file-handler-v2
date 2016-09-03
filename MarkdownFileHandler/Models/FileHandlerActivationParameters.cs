@@ -34,6 +34,15 @@ namespace MarkdownFileHandler.Models
                         case "client":
                             this.Client = collection[key];
                             break;
+                        case "item":
+                            this.ItemUrl = collection[key];
+                            break;
+                        case "userId":
+                            this.UserId = collection[key];
+                            break;
+                        case "items":
+                            this.ItemUrls = ConvertFromJsonArray<string>(collection[key]).ToArray();
+                            break;
                         default:
                             this.OtherValues[key] = collection[key];
                             break;
@@ -47,7 +56,27 @@ namespace MarkdownFileHandler.Models
         public string FileGet { get; set; }
         public string FilePut { get; set; }
         public string FileId { get; set; }
+
+        /// <summary>
+        /// The source service that invoked the file handler
+        /// </summary>
         public string Client { get; set; }
+
+        /// <summary>
+        /// For a single item action, the OneDrive API URL that can be used to access the item.
+        /// </summary>
+        public string ItemUrl { get; set; }
+        
+        /// <summary>
+        /// A collection of OneDrive API URLs that can be used to access the items the file handler is being invoked with
+        /// </summary>
+        public string[] ItemUrls { get; set; }
+
+        /// <summary>
+        /// A unique identifer for the logged in user who invoked the file handler.
+        /// </summary>
+        public string UserId { get; set; }
+
         public Dictionary<string, string> OtherValues { get; private set; }
 
         public bool CanRead
@@ -73,6 +102,11 @@ namespace MarkdownFileHandler.Models
                 return new System.Web.Mvc.MvcHtmlString(sb.ToString());
             }
 
+        }
+
+        private static List<T> ConvertFromJsonArray<T>(string input)
+        {
+            return Newtonsoft.Json.JsonConvert.DeserializeObject<List<T>>(input);
         }
     }
 }

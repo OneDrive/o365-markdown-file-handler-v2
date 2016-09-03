@@ -210,6 +210,7 @@
     <Compile Include="App_Start\RouteConfig.cs" />
     <Compile Include="App_Start\Startup.Auth.cs" />
     <Compile Include="Controllers\AccountController.cs" />
+    <Compile Include="Models\AsyncActionModel.cs" />
     <Compile Include="Controllers\FileHandlerController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Global.asax.cs">
@@ -234,6 +235,8 @@
     <Content Include="Global.asax" />
     <Content Include="Content\Site.css" />
     <Content Include="images\markdown.png" />
+    <Content Include="LoadingSpinner.css" />
+    <Content Include="pretendPost.htm" />
     <Content Include="Scripts\bootstrap.js" />
     <Content Include="Scripts\bootstrap.min.js" />
     <None Include="Scripts\jquery-1.10.2.intellisense.js" />
@@ -271,6 +274,8 @@
     <Content Include="Views\Shared\_LayoutFileHandler.cshtml" />
     <Content Include="Views\FileHandler\ConvertToPDF.cshtml" />
     <Content Include="Views\FileHandler\CompressFiles.cshtml" />
+    <Content Include="Views\FileHandler\AsyncJobStatus.cshtml" />
+    <Content Include="Views\Shared\_LayoutAsyncJob.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
@@ -282,6 +287,12 @@
     <Content Include="packages.config" />
     <None Include="Project_Readme.html" />
     <Content Include="Scripts\jquery-1.10.2.min.map" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\FileHandlerActions\FileHandlerActions.csproj">
+      <Project>{16b562dc-237d-4596-a219-9d775170a58e}</Project>
+      <Name>FileHandlerActions</Name>
+    </ProjectReference>
   </ItemGroup>
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>

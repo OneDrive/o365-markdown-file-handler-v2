@@ -1,41 +1,19 @@
-﻿@{
-    Layout = "~/Views/Shared/_LayoutFileHandler.cshtml";
-    ViewBag.Title = "Convert to PDF";
+﻿@model MarkdownFileHandler.Models.AsyncActionModel
+@{
+    Layout = "~/Views/Shared/_LayoutAsyncJob.cshtml";
+    ViewBag.Title = "Converting to PDF";
 }
 
-<h2>Convert to PDF</h2>
+<h2>Converting to PDF</h2>
 
-<hr />
+<script type="text/javascript">
+    var refreshTimerId = 0;
+    var refreshStatus = function() {
+        $("#asyncResults").load('@(Url.Action("GetAsyncJobStatus", "FileHandler", null, Request.Url.Scheme))?identifier=@Model.JobIdentifier');
+    }
+</script>  
 
-<div class="row">
-    <div class="col-md-2">ResourceId:</div>
-    <div class="col-md-10">@Model.ActivationParameters.ResourceId</div>
+<div id="asyncResults">
+    @{ Html.RenderPartial("AsyncJobStatus", Model); }
 </div>
-<div class="row">
-    <div class="col-md-2">Culture Name:</div>
-    <div class="col-md-10">@Model.ActivationParameters.CultureName</div>
-</div>
-<div class="row">
-    <div class="col-md-2">File Get:</div>
-    <div class="col-md-10">@Model.ActivationParameters.FileGet</div>
-</div>
-<div class="row">
-    <div class="col-md-2">File Put:</div>
-    <div class="col-md-10">@Model.ActivationParameters.FilePut</div>
-</div>
-<div class="row">
-    <div class="col-md-2">File Id:</div>
-    <div class="col-md-10">@Model.ActivationParameters.FileId</div>
-</div>
-<div class="row">
-    <div class="col-md-2">Client:</div>
-    <div class="col-md-10">@Model.ActivationParameters.Client</div>
-</div>
-<div class="row">
-    <div class="col-md-2">Error Message:</div>
-    <div class="col-md-10">@Model.ErrorMessage</div>
-</div>
-<div class="row">
-    <div class="col-md-2">Other properties:</div>
-    <div class="col-md-10">@Model.ActivationParameters.OtherPropertyValues</div>
-</div>
+
