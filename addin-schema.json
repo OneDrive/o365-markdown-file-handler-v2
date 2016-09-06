@@ -10,7 +10,7 @@
         },
         {
           "key": "actions",
-          "value": "{\"actions\":[{\"title\":\"Convert to PDF\",\"url\":\"https://markdownfilehandler.azurewebsites.net/filehandler/convertToPdf\",\"platform\":[\"web\"],\"selection\":[\"single\"]},{\"title\":\"Add to ZIP file\",\"url\":\"https://markdownfilehandler.azurewebsites.net/filehandler/compressFiles\",\"platform\":[\"web\"],\"selection\":[\"multiple\",\"none\"]}]}"
+          "value": "{\"actions\":[{\"title\":\"Convert to PDF\",\"url\":\"https://markdownfilehandler.azurewebsites.net/filehandler/convertToPdf\",\"platform\":[\"web\"],\"selection\":\"single\"},{\"title\":\"Add to ZIP file\",\"url\":\"https://markdownfilehandler.azurewebsites.net/filehandler/compressFiles\",\"platform\":[\"web\"],\"selection\":\"multiple\", \"allowFolders\": true}]}"
         }
       ]
     },
@@ -22,10 +22,10 @@
           "key": "extension", "value": "pdf"
         },
         {
-          "key": "openUrl", "value": "https://markdownfilehandler.azurewebsites.net/filehandler/open"
+          "key": "openUrl", "value": "https://markdownfilehandler.azurewebsites.net/filehandler/openpdf"
         },
         {
-          "key": "newFileUrl", "value": "https://markdownfilehandler.azurewebsites.net/filehandler/newfile"
+          "key": "newFileUrl", "value": "https://markdownfilehandler.azurewebsites.net/filehandler/newpdf"
         }
       ]
     },
