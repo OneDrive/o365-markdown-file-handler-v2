@@ -17,9 +17,7 @@ namespace MarkdownFileHandler
 {
     public partial class Startup
     {
-        private string ClientId = SettingsHelper.ClientId;
-        private string Authority = SettingsHelper.Authority;
-        
+       
         public void ConfigureAuth(IAppBuilder app)
         {
             app.SetDefaultSignInAsAuthenticationType(CookieAuthenticationDefaults.AuthenticationType);
@@ -29,9 +27,11 @@ namespace MarkdownFileHandler
             app.UseOpenIdConnectAuthentication(
                 new OpenIdConnectAuthenticationOptions
                 {
-                    ClientId = ClientId,
-                    Authority = Authority,
+                    ClientId = SettingsHelper.ClientId,
+                    Authority = SettingsHelper.Authority,
                     ClientSecret = SettingsHelper.AppKey,
+                    ResponseType = "code id_token",
+                    PostLogoutRedirectUri = "/",
                     TokenValidationParameters = new System.IdentityModel.Tokens.TokenValidationParameters
                     {
                         // instead of using the default validation (validating against a single issuer value, as we do in line of business apps), 
@@ -59,12 +59,13 @@ namespace MarkdownFileHandler
                         AuthorizationCodeReceived = async (context) =>
                         {
                             var code = context.Code;
-
                             ClientCredential credential = new ClientCredential(SettingsHelper.ClientId, SettingsHelper.AppKey);
-                            string tenantID = context.AuthenticationTicket.Identity.FindFirst("http://schemas.microsoft.com/identity/claims/tenantid").Value;
-                            string signInUserId = context.AuthenticationTicket.Identity.FindFirst(ClaimTypes.NameIdentifier).Value;
 
-                            var authContext = new Microsoft.IdentityModel.Clients.ActiveDirectory.AuthenticationContext(SettingsHelper.Authority, new AzureTableTokenCache(signInUserId));
+                            string tenantID = context.AuthenticationTicket.Identity.FindFirst("http://schemas.microsoft.com/identity/claims/tenantid").Value;
+                            string signInUserId = context.AuthenticationTicket.Identity.FindFirst(AuthHelper.ObjectIdentifierClaim).Value;
+
+                            var authContext = new Microsoft.IdentityModel.Clients.ActiveDirectory.AuthenticationContext(SettingsHelper.Authority, 
+                                new AzureTableTokenCache(signInUserId));
 
                             // Get the access token for AAD Graph. Doing this will also initialize the token cache associated with the authentication context
                             // In theory, you could acquire token for any service your application has access to here so that you can initialize the token cache
@@ -90,5 +91,6 @@ namespace MarkdownFileHandler
                     }
                 });
         }
+        
     }
 }

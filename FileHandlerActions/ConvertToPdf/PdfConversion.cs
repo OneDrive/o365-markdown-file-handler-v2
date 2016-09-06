@@ -52,7 +52,7 @@ namespace FileHandlerActions
             // Fetch the PDF version of the item
             try
             {
-                var pdfStreamUrl = ActionHelpers.BuildApiUrl(baseUrl, sourceItem.ParentReference.DriveId, sourceItem.Id, "/content?format=pdf");
+                var pdfStreamUrl = ActionHelpers.BuildApiUrl(baseUrl, sourceItem.ParentReference.DriveId, sourceItem.Id, "content?format=pdf");
                 pdfStream = await HttpHelper.Default.GetStreamContentForUrlAsync(pdfStreamUrl, accessToken);
             }
             catch (Exception ex)

@@ -209,6 +209,7 @@
     <Compile Include="App_Start\FilterConfig.cs" />
     <Compile Include="App_Start\RouteConfig.cs" />
     <Compile Include="App_Start\Startup.Auth.cs" />
+    <Compile Include="AuthHelper.cs" />
     <Compile Include="Controllers\AccountController.cs" />
     <Compile Include="Models\AsyncActionModel.cs" />
     <Compile Include="Controllers\FileHandlerController.cs" />
@@ -218,6 +219,7 @@
     </Compile>
     <Compile Include="Models\FileHandlerActivationParameters.cs" />
     <Compile Include="Models\FileHandlerModel.cs" />
+    <Compile Include="Models\HomeModel.cs" />
     <Compile Include="Models\MarkdownFile.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Startup.cs" />

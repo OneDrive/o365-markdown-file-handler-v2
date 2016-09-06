@@ -1,31 +1,27 @@
-﻿@{
+﻿@model MarkdownFileHandler.Models.HomeModel
+@{
     ViewBag.Title = "Home Page";
 }
 
 <div class="jumbotron">
-    <h1>ASP.NET</h1>
-    <p class="lead">ASP.NET is a free web framework for building great Web sites and Web applications using HTML, CSS and JavaScript.</p>
-    <p><a href="http://asp.net" class="btn btn-primary btn-lg">Learn more &raquo;</a></p>
+    <h1>File Hanlder 2.0</h1>
+    <p class="lead">To connect your OneDrive for Business and SharePoint environment to this file handler example, sign in using the link in the top right corner.</p>
 </div>
 
 <div class="row">
     <div class="col-md-4">
         <h2>Getting started</h2>
         <p>
-            ASP.NET MVC gives you a powerful, patterns-based way to build dynamic websites that
-            enables a clean separation of concerns and gives you full control over markup
-            for enjoyable, agile development.
+            This sample provides a few examples of how you can integrate your application with OneDrive for Business and SharePoint through File Handlers v2.0. This file handler
+            implements a custom set of actions on files that allow you to convert an Office document to PDF, merge a collection of files into a ZIP file, and preview Markdown format text files.
         </p>
-        <p><a class="btn btn-default" href="http://go.microsoft.com/fwlink/?LinkId=301865">Learn more &raquo;</a></p>
     </div>
+    @if (!string.IsNullOrEmpty(Model.SignInName))
+    {
     <div class="col-md-4">
-        <h2>Get more libraries</h2>
-        <p>NuGet is a free Visual Studio extension that makes it easy to add, remove, and update libraries and tools in Visual Studio projects.</p>
+        <h2>Signed In</h2>
+        <p>You are signed in. Your signin name is @Model.SignInName and your display name is @Model.DisplayName .</p>
         <p><a class="btn btn-default" href="http://go.microsoft.com/fwlink/?LinkId=301866">Learn more &raquo;</a></p>
     </div>
-    <div class="col-md-4">
-        <h2>Web Hosting</h2>
-        <p>You can easily find a web hosting company that offers the right mix of features and price for your applications.</p>
-        <p><a class="btn btn-default" href="http://go.microsoft.com/fwlink/?LinkId=301867">Learn more &raquo;</a></p>
-    </div>
+    }
 </div>

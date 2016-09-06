@@ -53,13 +53,16 @@ namespace MarkdownFileHandler.Controllers
         }
 
 
-        public ActionResult ConvertToPDF()
+        public async Task<ActionResult> ConvertToPDF()
         {
             var input = LoadActivationParameters();
-
             FileHandlerActions.PdfConverterJob job = new FileHandlerActions.PdfConverterJob();
             job.Status.OriginalParameters = input.ToDictionary();
-            HostingEnvironment.QueueBackgroundWorkItem(ct => job.BeginConvertToPdf(input.ItemUrl));
+
+            var resourceUrl = AuthHelper.GetResourceFromUrl(input.ItemUrl);
+            var accessToken = await AuthHelper.GetUserAccessTokenSilentAsync(resourceUrl);
+
+            HostingEnvironment.QueueBackgroundWorkItem(ct => job.BeginConvertToPdf(input.ItemUrl, accessToken));
             return View(new AsyncActionModel { JobIdentifier = job.Id, Status = job.Status });
         }
 
@@ -86,40 +89,6 @@ namespace MarkdownFileHandler.Controllers
 
             return View(await GetFileHandlerModelAsync(input));
         }
-
-        /// <summary>
-        /// Generates an access token that can be used to call the Microsoft Graph API.
-        /// </summary>
-        /// <param name="resourceId"></param>
-        /// <returns></returns>
-        private async Task<string> GetAccessToken(string resourceId)
-        {
-            string accessToken = null;
-            AuthenticationContext authContext = null;
-            try
-            {
-                var signInUserId = ClaimsPrincipal.Current.FindFirst(ClaimTypes.NameIdentifier).Value;
-                var userObjectId = ClaimsPrincipal.Current.FindFirst("http://schemas.microsoft.com/identity/claims/objectidentifier").Value;
-                var tenantId = ClaimsPrincipal.Current.FindFirst("http://schemas.microsoft.com/identity/claims/tenantid").Value;
-
-                authContext = new AuthenticationContext(SettingsHelper.Authority, new AzureTableTokenCache(signInUserId));
-                AuthenticationResult authResult = await authContext.AcquireTokenSilentAsync(resourceId, new ClientCredential(SettingsHelper.ClientId, SettingsHelper.AppKey), new UserIdentifier(userObjectId, UserIdentifierType.UniqueId));
-                accessToken = authResult.AccessToken;
-
-                if (string.IsNullOrWhiteSpace(accessToken))
-                {
-                    throw new AuthenticationException("access token is null");
-                }
-            }
-            catch (Exception)
-            {
-                authContext.TokenCache.Clear();
-                throw;
-            }
-
-            return accessToken;
-        }
-
 
         /// <summary>
         /// Parse either the POST data or stored cookie data to retrieve the file information from
@@ -155,7 +124,7 @@ namespace MarkdownFileHandler.Controllers
             string accessToken = null;
             try
             {
-                accessToken = await GetAccessToken(input.ResourceId);
+                accessToken = await AuthHelper.GetUserAccessTokenSilentAsync(input.ResourceId);
             }
             catch (Exception ex)
             {

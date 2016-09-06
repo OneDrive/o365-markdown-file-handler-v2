@@ -3,15 +3,42 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Web;
 using System.Web.Mvc;
+using System.Threading.Tasks;
 
 namespace MarkdownFileHandler.Controllers
 {
     
     public class HomeController : Controller
     {
-        public ActionResult Index()
+        public async Task<ActionResult> Index()
         {
-            return View();
+            Models.HomeModel model = new Models.HomeModel();
+
+            model.SignInName = AuthHelper.GetUserId();
+            if (!string.IsNullOrEmpty(model.SignInName))
+            {
+
+                try
+                {
+                    var accessToken = await AuthHelper.GetUserAccessTokenSilentAsync("https://graph.microsoft.com");
+                    // Make an API request to get display name
+                    var response = await FileHandlerActions.Directory.UserInfo.GetUserInfoAsync(model.SignInName, accessToken);
+                    if (null != response)
+                    {
+                        model.DisplayName = response.DisplayName;
+                    }
+                    else
+                    {
+                        model.DisplayName = "Error getting data from Microsoft Graph.";
+                    }
+                } catch (Exception ex)
+                {
+                    model.DisplayName = ex.ToString();
+                }
+            }
+
+
+            return View(model);
         }
 
         public ActionResult About()
