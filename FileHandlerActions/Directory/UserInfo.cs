@@ -13,11 +13,11 @@ namespace FileHandlerActions.Directory
         /// </summary>
         /// <param name="sourceFileUrl"></param>
         /// <returns></returns>
-        public static async Task<UserInfo> GetUserInfoAsync(string userObjectId, string accessToken)
+        public static async Task<UserInfo> GetUserInfoAsync(string graphUrl, string userObjectId, string accessToken)
         {
             if (!string.IsNullOrEmpty(userObjectId))
             {
-                return await HttpHelper.Default.GetMetadataForUrlAsync<UserInfo>("https://graph.microsoft.com/v1.0/me", accessToken);
+                return await HttpHelper.Default.GetMetadataForUrlAsync<UserInfo>($"{graphUrl}/v1.0/users/{userObjectId}", accessToken);
             }
 
             return null;

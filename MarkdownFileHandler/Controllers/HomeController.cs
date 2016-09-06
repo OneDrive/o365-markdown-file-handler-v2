@@ -20,9 +20,9 @@ namespace MarkdownFileHandler.Controllers
 
                 try
                 {
-                    var accessToken = await AuthHelper.GetUserAccessTokenSilentAsync("https://graph.microsoft.com");
+                    var accessToken = await AuthHelper.GetUserAccessTokenSilentAsync(SettingsHelper.AADGraphResourceId);
                     // Make an API request to get display name
-                    var response = await FileHandlerActions.Directory.UserInfo.GetUserInfoAsync(model.SignInName, accessToken);
+                    var response = await FileHandlerActions.Directory.UserInfo.GetUserInfoAsync(SettingsHelper.AADGraphResourceId, model.SignInName, accessToken);
                     if (null != response)
                     {
                         model.DisplayName = response.DisplayName;
