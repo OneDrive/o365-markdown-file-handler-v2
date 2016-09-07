@@ -95,12 +95,12 @@ namespace MarkdownFileHandler.Models
 
         public bool CanRead
         {
-            get { return !(string.IsNullOrWhiteSpace(this.ResourceId) || string.IsNullOrWhiteSpace(this.FileGet)); }
+            get { return !(string.IsNullOrWhiteSpace(this.ResourceId) || string.IsNullOrWhiteSpace(this.FileGet) || string.IsNullOrEmpty(this.ItemUrl) ); }
         }
 
         public bool CanWrite
         {
-            get { return CanRead && !(string.IsNullOrWhiteSpace(this.FilePut)); }
+            get { return CanRead && !(string.IsNullOrWhiteSpace(this.FilePut) && string.IsNullOrEmpty(this.ItemUrl) ); }
         }
 
         public System.Web.Mvc.MvcHtmlString OtherPropertyValues
