@@ -9,7 +9,7 @@ using Microsoft.OneDrive.Sdk;
 
 namespace FileHandlerActions
 {
-    public class PdfConversion
+    public class PdfConversion : IAsyncJob
     {
 
         /// <summary>
@@ -17,8 +17,9 @@ namespace FileHandlerActions
         /// </summary>
         /// <param name="sourceFileUrl"></param>
         /// <returns></returns>
-        public async Task<string> ConvertFileToPdfAsync(string oneDriveApiSourceUrl, string accessToken = null)
+        public async Task<string> DoWorkAsync(string[] sourceUrls, string accessToken = null)
         {
+            var oneDriveApiSourceUrl = sourceUrls.Single();
             var baseUrl = ActionHelpers.ParseBaseUrl(oneDriveApiSourceUrl);
 
             // Make an HTTP GET request to oneDriveApiSourceUrl to get item metadata (Microsoft.OneDrive.Sdk.Item)

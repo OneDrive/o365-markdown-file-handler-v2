@@ -17,7 +17,6 @@ namespace MarkdownFileHandler.Controllers
             model.SignInName = AuthHelper.GetUserId();
             if (!string.IsNullOrEmpty(model.SignInName))
             {
-
                 try
                 {
                     var accessToken = await AuthHelper.GetUserAccessTokenSilentAsync(SettingsHelper.AADGraphResourceId);

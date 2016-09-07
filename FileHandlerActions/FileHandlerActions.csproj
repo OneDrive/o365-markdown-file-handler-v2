@@ -50,6 +50,8 @@
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
+    <Reference Include="System.IO.Compression" />
+    <Reference Include="System.IO.Compression.FileSystem" />
     <Reference Include="System.Web" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
@@ -66,7 +68,7 @@
     <Compile Include="HttpHelper.cs" />
     <Compile Include="JobTracker.cs" />
     <Compile Include="ConvertToPdf\PdfConversion.cs" />
-    <Compile Include="ConvertToPdf\PdfConverterJob.cs" />
+    <Compile Include="ConvertToPdf\AsyncJob.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

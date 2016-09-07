@@ -56,13 +56,15 @@ namespace MarkdownFileHandler.Controllers
         public async Task<ActionResult> ConvertToPDF()
         {
             var input = LoadActivationParameters();
-            FileHandlerActions.PdfConverterJob job = new FileHandlerActions.PdfConverterJob();
+
+            var pdfConverter = new FileHandlerActions.PdfConversion();
+            FileHandlerActions.AsyncJob job = new FileHandlerActions.AsyncJob(pdfConverter);
             job.Status.OriginalParameters = input.ToDictionary();
 
             var resourceUrl = AuthHelper.GetResourceFromUrl(input.ItemUrl);
             var accessToken = await AuthHelper.GetUserAccessTokenSilentAsync(resourceUrl);
 
-            HostingEnvironment.QueueBackgroundWorkItem(ct => job.BeginConvertToPdf(input.ItemUrl, accessToken));
+            HostingEnvironment.QueueBackgroundWorkItem(ct => job.Begin(new string[] { input.ItemUrl }, accessToken));
             return View(new AsyncActionModel { JobIdentifier = job.Id, Status = job.Status });
         }
 
@@ -75,7 +77,16 @@ namespace MarkdownFileHandler.Controllers
         public async Task<ActionResult> CompressFiles()
         {
             var input = LoadActivationParameters();
-            return View(new FileHandlerModel(input, null, null));
+
+            var addToZipFile = new FileHandlerActions.AddToZip.AddToZipAction();
+            FileHandlerActions.AsyncJob job = new FileHandlerActions.AsyncJob(addToZipFile);
+            job.Status.OriginalParameters = input.ToDictionary();
+
+            var resourceUrl = AuthHelper.GetResourceFromUrl(input.ItemUrls.First());
+            var accessToken = await AuthHelper.GetUserAccessTokenSilentAsync(resourceUrl);
+
+            HostingEnvironment.QueueBackgroundWorkItem(ct => job.Begin(input.ItemUrls, accessToken));
+            return View(new AsyncActionModel { JobIdentifier = job.Id, Status = job.Status });
         }
 
         public async Task<ActionResult> NewFile()

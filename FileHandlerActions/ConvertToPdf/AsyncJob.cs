@@ -6,29 +6,30 @@ using System.Threading.Tasks;
 
 namespace FileHandlerActions
 {
-    public class PdfConverterJob
+    public class AsyncJob
     {
-
         public JobStatus Status { get; private set; }
 
         public string Id { get { return Status.Id; } }
 
-        public PdfConverterJob()
+        private IAsyncJob Job { get; set; }
+
+        public AsyncJob(IAsyncJob job)
         {
+            this.Job = job;
             Status = new FileHandlerActions.JobStatus();
             Status.State = JobState.NotStarted;
-
             JobTracker.QueueJob(this.Status);
         }
 
-        public async void BeginConvertToPdf(string sourceUrl, string accessToken = null)
+        public async void Begin(string[] sourceUrls, string accessToken = null)
         {
             Status.State = JobState.Running;
-            PdfConversion converter = new FileHandlerActions.PdfConversion();
 
             try
             {
-                var webUrl = await converter.ConvertFileToPdfAsync(sourceUrl, accessToken);
+                var webUrl = await Job.DoWorkAsync(sourceUrls, accessToken);
+
                 Status.ResultWebUrl = webUrl;
                 Status.State = JobState.Complete;
             }
@@ -38,7 +39,10 @@ namespace FileHandlerActions
                 Status.Error = ex;
             }
         }
+    }
 
-
+    public interface IAsyncJob
+    {
+        Task<string> DoWorkAsync(string[] sourceUrls, string accessToken);
     }
 }
