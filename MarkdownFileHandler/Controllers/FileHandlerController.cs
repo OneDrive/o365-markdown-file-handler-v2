@@ -94,7 +94,7 @@ namespace MarkdownFileHandler.Controllers
                 return View(MarkdownFileModel.GetErrorModel(input, "Required parameters are missing. Cannot write the source file."));
             }
 
-            return View(await GetFileHandlerModelAsync(input, FileAccess.Write));
+            return View("Edit", await GetFileHandlerModelAsync(input, FileAccess.Write));
         }
 
 

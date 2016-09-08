@@ -270,7 +270,6 @@
     <Content Include="Views\Home\Index.cshtml" />
     <Content Include="Views\Shared\_LoginPartial.cshtml" />
     <Content Include="Views\Account\SignOutCallback.cshtml" />
-    <Content Include="Views\FileHandler\NewFile.cshtml" />
     <Content Include="Views\FileHandler\Open.cshtml" />
     <Content Include="Views\FileHandler\Preview.cshtml" />
     <Content Include="Views\Home\Error.cshtml" />
