@@ -1,23 +1,9 @@
 ﻿@model MarkdownFileHandler.Models.AsyncActionModel
 
+@Html.Hidden("jobState", Model.Status.State);
+
 <div><b>Current State:</b>&nbsp;@Model.Status.State</div>
 <div><b>Job ID:</b>&nbsp;@Model.JobIdentifier</div>
-
-@if (Model.Status.State == FileHandlerActions.JobState.Error || 
-     Model.Status.State == FileHandlerActions.JobState.Complete)
-{
-    <script type="text/javascript">
-      clearTimeout(refreshTimerId);
-      $("#divLoadingSpinner").hide();
-    </script>
-}
-else
-{
-    <script type="text/javascript">
-      refreshTimerId = setTimeout(refreshStatus, 100);
-      $("#divLoadingSpinner").show();
-    </script>
-}
 
 @if (Model.Status.ResultWebUrl != null)
 {

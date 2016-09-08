@@ -45,7 +45,8 @@ namespace MarkdownFileHandler.Models
                             this.UserId = collection[key];
                             break;
                         case "items":
-                            this.ItemUrls = ConvertFromJsonArray<string>(collection[key]).ToArray();
+                            if (!string.IsNullOrEmpty(collection[key]))
+                                this.ItemUrls = ConvertFromJsonArray<string>(collection[key]).ToArray();
                             break;
                         case "content":
                             this.FileContent = collection[key];

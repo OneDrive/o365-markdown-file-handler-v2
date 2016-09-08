@@ -11,5 +11,7 @@ namespace MarkdownFileHandler.Models
 
         public FileHandlerActions.JobStatus Status { get; set; }
 
+        public string Title { get; set; }
+
     }
 }

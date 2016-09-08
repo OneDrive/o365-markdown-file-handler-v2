@@ -110,7 +110,7 @@ namespace MarkdownFileHandler.Controllers
             var accessToken = await AuthHelper.GetUserAccessTokenSilentAsync(resourceUrl);
 
             HostingEnvironment.QueueBackgroundWorkItem(ct => job.Begin(new string[] { input.ItemUrl }, accessToken));
-            return View(new AsyncActionModel { JobIdentifier = job.Id, Status = job.Status });
+            return View("AsyncAction", new AsyncActionModel { JobIdentifier = job.Id, Status = job.Status, Title = "Convert to PDF" });
         }
 
         public ActionResult GetAsyncJobStatus(string identifier)
@@ -131,7 +131,7 @@ namespace MarkdownFileHandler.Controllers
             var accessToken = await AuthHelper.GetUserAccessTokenSilentAsync(resourceUrl);
 
             HostingEnvironment.QueueBackgroundWorkItem(ct => job.Begin(input.ItemUrls, accessToken));
-            return View(new AsyncActionModel { JobIdentifier = job.Id, Status = job.Status });
+            return View("AsyncAction", new AsyncActionModel { JobIdentifier = job.Id, Status = job.Status, Title = "Add to ZIP" });
         }
 
 
