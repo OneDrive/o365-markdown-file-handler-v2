@@ -1,6 +1,6 @@
 ﻿@model MarkdownFileHandler.Models.AsyncActionModel
 
-@Html.Hidden("jobState", Model.Status.State);
+@Html.Hidden("jobState", Model.Status.State)
 
 <div><b>Current State:</b>&nbsp;@Model.Status.State</div>
 <div><b>Job ID:</b>&nbsp;@Model.JobIdentifier</div>

@@ -16,7 +16,7 @@
 <script type="text/javascript">
   function refreshStatus() {
     $("#asyncResults").load('@(Url.Action("GetAsyncJobStatus", "FileHandler", null, Request.Url.Scheme))?identifier=@Model.JobIdentifier', null, function () {
-      var state = $("jobState").val();
+      var state = $("input#jobState").val();
       if (state == "Running" || state == "NotStarted" ) {
         $("#divLoadingSpinner").show();
         setTimeout(refreshStatus, 100);
