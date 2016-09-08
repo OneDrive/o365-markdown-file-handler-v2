@@ -1,22 +1,17 @@
-﻿using MarkdownFileHandler.Models;
-using MarkdownFileHandler.Utils;
-using Microsoft.IdentityModel.Clients.ActiveDirectory;
+﻿using FileHandlerActions;
+using MarkdownFileHandler.Models;
 using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Net;
-using System.Security.Authentication;
-using System.Security.Claims;
 using System.Threading.Tasks;
-using System.Web;
 using System.Web.Hosting;
 using System.Web.Mvc;
 
 namespace MarkdownFileHandler.Controllers
 {
 
-    //[Authorize]
+    [Authorize]
     public class FileHandlerController : Controller
     {
 
@@ -26,14 +21,14 @@ namespace MarkdownFileHandler.Controllers
         /// <returns></returns>
         public async Task<ActionResult> Preview()
         {
-            var input = LoadActivationParameters();
+            var input = GetActivationParameters();
 
             if (!input.CanRead)
             {
-                return View(new FileHandlerModel(input, null, new MvcHtmlString("Required parameters are missing.")));
+                return View(MarkdownFileModel.GetErrorModel(input, "Required parameters are missing. Cannot read the source file."));
             }
 
-            return View(await GetFileHandlerModelAsync(input));
+            return View(await GetFileHandlerModelAsync(input, FileAccess.Read));
         }
 
         /// <summary>
@@ -42,20 +37,70 @@ namespace MarkdownFileHandler.Controllers
         /// <returns></returns>
         public async Task<ActionResult> Open()
         {
-            var input = LoadActivationParameters();
+            var input = GetActivationParameters();
 
             if (!input.CanWrite)
             {
-                return View(new FileHandlerModel(input, null, new MvcHtmlString("Required parameters are missing.")));
+                return View(MarkdownFileModel.GetErrorModel(input, "Required parameters are missing. Cannot write the source file."));
+            }
+            //TempData["activationParameters"] = input;
+
+            return View(await GetFileHandlerModelAsync(input, FileAccess.Read));
+        }
+
+        public async Task<ActionResult> Edit()
+        {
+            //FileHandlerActivationParameters input = (FileHandlerActivationParameters)TempData["activationParameters"];
+            var input = GetActivationParameters();
+
+            if (input == null || !input.CanWrite)
+            {
+                return View(MarkdownFileModel.GetErrorModel(input, "Required parameters are missing. Cannot write the source file."));
+            }
+            
+            return View(await GetFileHandlerModelAsync(input, FileAccess.ReadWrite));
+
+        }
+
+        public async Task<ActionResult> Save()
+        {
+            var input = GetActivationParameters();
+
+            if (input == null || !input.CanWrite)
+            {
+                return Json(new SaveResults() { Success = false, Error = "Missing activation parameters." });
             }
 
-            return View(await GetFileHandlerModelAsync(input));
+            try
+            {
+                return Json(await SaveChangesToFileAsync(input));
+            }
+            catch (Exception ex)
+            {
+                return Json(new SaveResults { Success = false, Error = ex.Message });
+            }
+        }
+
+        /// <summary>
+        /// Generate a read-write editor experience for a new file
+        /// </summary>
+        /// <returns></returns>
+        public async Task<ActionResult> NewFile()
+        {
+            var input = GetActivationParameters();
+
+            if (!input.CanWrite)
+            {
+                return View(MarkdownFileModel.GetErrorModel(input, "Required parameters are missing. Cannot write the source file."));
+            }
+
+            return View(await GetFileHandlerModelAsync(input, FileAccess.Write));
         }
 
 
         public async Task<ActionResult> ConvertToPDF()
         {
-            var input = LoadActivationParameters();
+            var input = GetActivationParameters();
 
             var pdfConverter = new FileHandlerActions.PdfConversion();
             FileHandlerActions.AsyncJob job = new FileHandlerActions.AsyncJob(pdfConverter);
@@ -76,7 +121,7 @@ namespace MarkdownFileHandler.Controllers
 
         public async Task<ActionResult> CompressFiles()
         {
-            var input = LoadActivationParameters();
+            var input = GetActivationParameters();
 
             var addToZipFile = new FileHandlerActions.AddToZip.AddToZipAction();
             FileHandlerActions.AsyncJob job = new FileHandlerActions.AsyncJob(addToZipFile);
@@ -89,27 +134,15 @@ namespace MarkdownFileHandler.Controllers
             return View(new AsyncActionModel { JobIdentifier = job.Id, Status = job.Status });
         }
 
-        public async Task<ActionResult> NewFile()
-        {
-            var input = LoadActivationParameters();
-
-            if (!input.CanWrite)
-            {
-                return View(new FileHandlerModel(input, null, new MvcHtmlString("Required parameters are missing.")));
-            }
-
-            return View(await GetFileHandlerModelAsync(input));
-        }
 
         /// <summary>
         /// Parse either the POST data or stored cookie data to retrieve the file information from
         /// the request.
         /// </summary>
         /// <returns></returns>
-        private FileHandlerActivationParameters LoadActivationParameters()
+        private FileHandlerActivationParameters GetActivationParameters()
         {
             FileHandlerActivationParameters activationParameters = null;
-
             if (Request.Form != null && Request.Form.AllKeys.Count<string>() != 0)
             {
                 // Get from current request's form data
@@ -124,13 +157,18 @@ namespace MarkdownFileHandler.Controllers
                 // Clear the cookie after using it
                 CookieStorage.Clear();
             }
-
             return activationParameters;
         }
 
 
-        private async Task<FileHandlerModel> GetFileHandlerModelAsync(FileHandlerActivationParameters input)
+
+        private async Task<MarkdownFileModel> GetFileHandlerModelAsync(FileHandlerActivationParameters input, FileAccess access)
         {
+            if (!string.IsNullOrEmpty(input.ItemUrl))
+            {
+                return await GetFileHandlerModelV2Async(input);
+            }
+
             // Retrieve an access token so we can make API calls
             string accessToken = null;
             try
@@ -139,7 +177,7 @@ namespace MarkdownFileHandler.Controllers
             }
             catch (Exception ex)
             {
-                return new FileHandlerModel(input, null, new MvcHtmlString("Error acquiring access token. Exception: " + ex.ToString()));
+                return MarkdownFileModel.GetErrorModel(input, ex);
             }
 
             // Get file content
@@ -150,24 +188,76 @@ namespace MarkdownFileHandler.Controllers
             }
             catch (Exception ex)
             {
-                return new FileHandlerModel(input, null, new MvcHtmlString("Error downloading file contents. Exception: " + ex.ToString()));
+                return MarkdownFileModel.GetErrorModel(input, ex);
             }
 
             // Convert the stream into text for rendering
             StreamReader reader = new StreamReader(fileContentStream);
-            var fileContentString = await reader.ReadToEndAsync();
+            var markdownContent = await reader.ReadToEndAsync();
 
-            var htmlContent = ConvertMarkdownToHtml(fileContentString);
-
-            return new FileHandlerModel(input, htmlContent, null);
+            return MarkdownFileModel.GetWriteableModel(input, string.Empty, markdownContent);
         }
 
-
-        private string ConvertMarkdownToHtml(string markdown)
+        private async Task<SaveResults> SaveChangesToFileAsync(FileHandlerActivationParameters input)
         {
-            var file = new MarkdownFile(markdown);
-            return file.TransformToHtml();
+            // Retrieve an access token so we can make API calls
+            var resourceUrl = AuthHelper.GetResourceFromUrl(input.ItemUrl);
+            string accessToken = null;
+            try
+            {
+                accessToken = await AuthHelper.GetUserAccessTokenSilentAsync(resourceUrl);
+            }
+            catch (Exception ex)
+            {
+                return new SaveResults { Error = ex.Message };
+            }
+
+            // Upload the new file content
+            try
+            {
+                var stream = new MemoryStream(System.Text.Encoding.UTF8.GetBytes(input.FileContent));
+
+                var result = await HttpHelper.Default.UploadFileContentsFromStreamAsync(stream, input.ItemUrl, accessToken);
+                return new SaveResults { Success = result };
+            }
+            catch (Exception ex)
+            {
+                return new SaveResults { Error = ex.Message };
+            }
         }
+
+        private async Task<MarkdownFileModel> GetFileHandlerModelV2Async(FileHandlerActivationParameters input)
+        {
+            // Retrieve an access token so we can make API calls
+            var resourceUrl = AuthHelper.GetResourceFromUrl(input.ItemUrl);
+            string accessToken = null;
+            try
+            {
+                accessToken = await AuthHelper.GetUserAccessTokenSilentAsync(resourceUrl);
+            }
+            catch (Exception ex)
+            {
+                return MarkdownFileModel.GetErrorModel(input, ex);
+            }
+
+            // Get file content
+            FileData results = null;
+            try
+            {
+                results = await HttpHelper.Default.GetStreamContentForItemUrlAsync(input.ItemUrl, accessToken);
+            }
+            catch (Exception ex)
+            {
+                return MarkdownFileModel.GetErrorModel(input, ex);
+            }
+
+            // Convert the stream into text for rendering
+            StreamReader reader = new StreamReader(results.ContentStream);
+            var markdownSource = await reader.ReadToEndAsync();
+
+            return MarkdownFileModel.GetWriteableModel(input, results.Filename, markdownSource);
+        }
+
 
         /// <summary>
         /// Download the contents of the file from the server and return as a stream.

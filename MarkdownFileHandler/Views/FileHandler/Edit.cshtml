@@ -1,0 +1,57 @@
+﻿@model MarkdownFileHandler.Models.MarkdownFileModel
+@{
+    ViewBag.Title = Model.Filename + " - Markdown Editor";
+    Layout = "~/Views/Shared/_LayoutFileHandler.cshtml";
+}
+@section Head
+{
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/simplemde/latest/simplemde.min.css">
+    <script src="https://cdn.jsdelivr.net/simplemde/latest/simplemde.min.js"></script>
+}
+
+@section ToolbarButtons
+{
+    <li><a href="#" onclick="SaveChangesToHost(); return false">Save</a></li>
+    <li><a href="#">Delete</a></li>
+}
+
+@if (!string.IsNullOrEmpty(Model.ErrorMessage))
+{
+    <h1>Error occured</h1>
+    <p>An error occured: @Model.ErrorMessage</p>
+}
+
+@using (Html.BeginForm())
+{
+    if (null != Model.ActivationParameters)
+    {
+    @Html.Hidden("item", Model.ActivationParameters.ItemUrl);
+    @Html.Hidden("client", Model.ActivationParameters.Client);
+    @Html.TextArea("content", Model.MarkdownFileContent);
+    }
+}
+<script>
+    var simplemde = new SimpleMDE({
+        element: document.getElementById("content"),
+        forceSync: true
+    });
+
+    function SaveChangesToHost()
+    {
+        var data = $("form").serialize();
+        $.post("/FileHandler/Save", data, function(data, textStatus, xhr) {
+            if (!data.Success)
+            {
+                window.alert("An error occured saving this file: " + data.Error);
+            }
+            else
+            {
+                window.alert("Saved changes.");
+            }
+        });
+    }
+</script>
+
+
+
+

@@ -7,11 +7,7 @@
 
 @if (Model.ErrorMessage != null)
 {
-    <h4>@Model.ErrorMessage</h4>
+
+    <h4>Unable to generate a preview</h4>
+    <p>@Model.ErrorMessage</p>
 }
-
-
-<div class="row">
-    <div class="col-md-2">Other properties:</div>
-    <div class="col-md-10">@Model.ActivationParameters.OtherPropertyValues</div>
-</div>

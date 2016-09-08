@@ -7,7 +7,7 @@ using System.Web;
 
 namespace FileHandlerActions
 {
-    static class ActionHelpers
+    public static class ActionHelpers
     {
         /// <summary>
         /// Returns an access token from a URL string, if one is available

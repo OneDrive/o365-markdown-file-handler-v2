@@ -47,6 +47,9 @@ namespace MarkdownFileHandler.Models
                         case "items":
                             this.ItemUrls = ConvertFromJsonArray<string>(collection[key]).ToArray();
                             break;
+                        case "content":
+                            this.FileContent = collection[key];
+                            break;
                         default:
                             this.OtherValues[key] = collection[key];
                             break;
@@ -91,16 +94,33 @@ namespace MarkdownFileHandler.Models
         /// </summary>
         public string UserId { get; set; }
 
+        /// <summary>
+        /// The content of a file, used when saving changes back from the client
+        /// </summary>
+        public string FileContent { get; set; }
+
         public Dictionary<string, string> OtherValues { get; private set; }
 
         public bool CanRead
         {
-            get { return !(string.IsNullOrWhiteSpace(this.ResourceId) || string.IsNullOrWhiteSpace(this.FileGet) || string.IsNullOrEmpty(this.ItemUrl) ); }
+            get
+            {
+                if (!string.IsNullOrEmpty(this.ItemUrl))
+                    return true;
+
+                return !(string.IsNullOrWhiteSpace(this.ResourceId) || string.IsNullOrWhiteSpace(this.FileGet));
+            }
         }
 
         public bool CanWrite
         {
-            get { return CanRead && !(string.IsNullOrWhiteSpace(this.FilePut) && string.IsNullOrEmpty(this.ItemUrl) ); }
+            get
+            {
+                if (!string.IsNullOrEmpty(this.ItemUrl))
+                    return true;
+
+                return CanRead && !string.IsNullOrWhiteSpace(this.FilePut);
+            }
         }
 
         public System.Web.Mvc.MvcHtmlString OtherPropertyValues

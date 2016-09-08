@@ -4,6 +4,15 @@
     <title>Invoke File Handler</title>
 </head>
 <body>
+    <select name="actionSelector" id="actionSelector">
+        <option value="converttopdf">Convert to PDF</option>
+        <option value="compressfiles">Compress Files</option>
+        <option value="open">Open</option>
+        <option value="preview">Preview</option>
+        <option value="newfile">New File</option>
+        <option value="edit">Edit</option>
+    </select>
+
     <form action="/filehandler/converttopdf" method="post" target="_blank" id="post1">
     
         <table border="0">
@@ -19,6 +28,12 @@
                 <td>Item URL</td>
                 <td><input type="text" name="item" value="https://microsoft-my.sharepoint.com/_api/v2.0/drive/root:/Sample%20Document.docx" style="width: 724px" /></td>
             </tr>
+            <!--<tr>
+                <td>Item URLs</td>
+                <td>
+                    <textarea name="items">["https://microsoft-my.sharepoint.com/_api/v2.0/drive/root:/Sample%20Document.docx"]</textarea>
+                </td>
+            </tr>-->
             <tr>
                 <td>User Id</td>
                 <td><input type="text" name="userId" value="rgregg@microsoft.com" style="width: 320px" /></td>
@@ -31,3 +46,9 @@
     </form>
 </body>
 </html>
+
+<script language="javascript">
+    document.getElementById("actionSelector").onchange = function () {
+        document.getElementById("post1").action = "/filehandler/" + document.getElementById("actionSelector").value;
+    };
+</script>

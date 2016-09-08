@@ -1,42 +1,27 @@
-﻿@{
+﻿@model MarkdownFileHandler.Models.MarkdownFileModel
+@{
+    ViewBag.Title = "New File - Markdown Editor";
     Layout = "~/Views/Shared/_LayoutFileHandler.cshtml";
-    ViewBag.Title = "New Markdown File";
 }
 
-<h2>New Markdown File</h2>
+@section ToolbarButtons
+{
+    <li><a href="#">Save</a></li>
+    <li><a href="#">Delete</a></li>
+}
 
-<h5>Editor TBD</h5>
+@if (!string.IsNullOrEmpty(Model.ErrorMessage))
+{
+    <h1>Error occured</h1>
+    <p>An error occured: @Model.ErrorMessage</p>
+}
 
-<hr />
-<div class="row">
-  <div class="col-md-2">ResourceId:</div>
-  <div class="col-md-10">@Model.ActivationParameters.ResourceId</div>
-</div>
-<div class="row">
-  <div class="col-md-2">Culture Name:</div>
-  <div class="col-md-10">@Model.ActivationParameters.CultureName</div>
-</div>
-<div class="row">
-  <div class="col-md-2">File Get:</div>
-  <div class="col-md-10">@Model.ActivationParameters.FileGet</div>
-</div>
-<div class="row">
-  <div class="col-md-2">File Put:</div>
-  <div class="col-md-10">@Model.ActivationParameters.FilePut</div>
-</div>
-<div class="row">
-  <div class="col-md-2">File Id:</div>
-  <div class="col-md-10">@Model.ActivationParameters.FileId</div>
-</div>
-<div class="row">
-  <div class="col-md-2">Client:</div>
-  <div class="col-md-10">@Model.ActivationParameters.Client</div>
-</div>
-<div class="row">
-  <div class="col-md-2">Error Message:</div>
-  <div class="col-md-10">@Model.ErrorMessage</div>
-</div>
-<div class="row">
-    <div class="col-md-2">Other properties:</div>
-    <div class="col-md-10">@Model.ActivationParameters.OtherPropertyValues</div>
-</div>
+<textarea id="markdownEditor">@Model.MarkdownFileContent</textarea>
+
+<script>
+    var simplemde = new SimpleMDE({ element: document.getElementById("markdownEditor") });
+</script>
+
+
+
+

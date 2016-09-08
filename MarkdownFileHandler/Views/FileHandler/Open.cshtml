@@ -1,42 +1,25 @@
-﻿@{
+﻿@model MarkdownFileHandler.Models.MarkdownFileModel
+@{
+    ViewBag.Title = Model.Filename + " - Markdown Editor";
     Layout = "~/Views/Shared/_LayoutFileHandler.cshtml";
-    ViewBag.Title = "Open";
 }
 
-@Model.FileContent
+@section ToolbarButtons
+{
+<li><a href="#" onclick='$("form").submit(); return false'>Edit in Browser</a></li>
+}
+
+@if (!string.IsNullOrEmpty(Model.ErrorMessage))
+{
+    <h1>Error occured</h1>
+    <p>An error occured: @Model.ErrorMessage</p>
+}
+
+@Model.HtmlFileContent
 
 
-<hr />
-
-<div class="row">
-  <div class="col-md-2">ResourceId:</div>
-  <div class="col-md-10">@Model.ActivationParameters.ResourceId</div>
-</div>
-<div class="row">
-  <div class="col-md-2">Culture Name:</div>
-  <div class="col-md-10">@Model.ActivationParameters.CultureName</div>
-</div>
-<div class="row">
-  <div class="col-md-2">File Get:</div>
-  <div class="col-md-10">@Model.ActivationParameters.FileGet</div>
-</div>
-<div class="row">
-  <div class="col-md-2">File Put:</div>
-  <div class="col-md-10">@Model.ActivationParameters.FilePut</div>
-</div>
-<div class="row">
-  <div class="col-md-2">File Id:</div>
-  <div class="col-md-10">@Model.ActivationParameters.FileId</div>
-</div>
-<div class="row">
-  <div class="col-md-2">Client:</div>
-  <div class="col-md-10">@Model.ActivationParameters.Client</div>
-</div>
-<div class="row">
-  <div class="col-md-2">Error Message:</div>
-  <div class="col-md-10">@Model.ErrorMessage</div>
-</div>
-<div class="row">
-    <div class="col-md-2">Other properties:</div>
-    <div class="col-md-10">@Model.ActivationParameters.OtherPropertyValues</div>
-</div>
+@using (Html.BeginForm("Edit", "FileHandler"))
+{
+    @Html.Hidden("item", Model.ActivationParameters.ItemUrl);
+    @Html.Hidden("client", Model.ActivationParameters.Client);
+ }

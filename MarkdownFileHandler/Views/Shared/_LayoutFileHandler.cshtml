@@ -6,7 +6,8 @@
     <title>@ViewBag.Title - Markdown File Handler</title>
     @Styles.Render("~/Content/css")
     @Scripts.Render("~/bundles/modernizr")
-
+    
+    @RenderSection("Head", required: false)
 </head>
 <body>
   @if (ViewBag.HideNavigationBar != true)
@@ -19,12 +20,11 @@
                     <span class="icon-bar"></span>
                     <span class="icon-bar"></span>
                 </button>
-              <div class="navbar-brand">Markdown</div>
+              <div class="navbar-brand">Markdown Editor</div>
             </div>
             <div class="navbar-collapse collapse">
                 <ul class="nav navbar-nav">
-                    <li>@Html.ActionLink("Save", "Edit", "FileHandler")</li>
-                    <li>@Html.ActionLink("Edit", "Edit", "FileHandler")</li>
+                    @RenderSection("ToolbarButtons", required: false)
                 </ul>
             </div>
         </div>
