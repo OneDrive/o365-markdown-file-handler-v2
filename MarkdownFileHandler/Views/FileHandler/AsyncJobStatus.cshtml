@@ -3,9 +3,6 @@
 <div><b>Current State:</b>&nbsp;@Model.Status.State</div>
 <div><b>Job ID:</b>&nbsp;@Model.JobIdentifier</div>
 
-<!-- Loading animation -->
-<div class="windows8" id="divLoadingSpinner"><div class="wBall" id="wBall_1"><div class="wInnerBall"></div></div><div class="wBall" id="wBall_2"><div class="wInnerBall"></div></div><div class="wBall" id="wBall_3"><div class="wInnerBall"></div></div><div class="wBall" id="wBall_4"><div class="wInnerBall"></div></div><div class="wBall" id="wBall_5"><div class="wInnerBall"></div></div></div>
-
 @if (Model.Status.State == FileHandlerActions.JobState.Error || 
      Model.Status.State == FileHandlerActions.JobState.Complete)
 {
