@@ -112,18 +112,13 @@ namespace FileHandlerActions
             }
 
             var responseMessage = await httpClient.SendAsync(requestMessage);
+            responseMessage.EnsureSuccessStatusCode();
 
-            if (responseMessage.IsSuccessStatusCode)
-            {
-                MemoryStream ms = new MemoryStream();
-                var responseStream = await responseMessage.Content.ReadAsStreamAsync();
-                await responseStream.CopyToAsync(ms);
-                ms.Seek(0, SeekOrigin.Begin);
-                return ms;
-            }
-
-            return null;
-
+            MemoryStream ms = new MemoryStream();
+            var responseStream = await responseMessage.Content.ReadAsStreamAsync();
+            await responseStream.CopyToAsync(ms);
+            ms.Seek(0, SeekOrigin.Begin);
+            return ms;
         }
 
     }
