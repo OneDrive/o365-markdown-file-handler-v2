@@ -26,6 +26,24 @@ namespace FileHandlerActions
             return await PutFileStreamToUrlAsync(fileStream, accessToken, requestUrl);
         }
 
+        public async Task PatchItemMetadataAsync(object patchBody, string itemUrl, string accessToken)
+        {
+            var requestMessage = new HttpRequestMessage(HttpMethod.Post, itemUrl);
+            requestMessage.Headers.TryAddWithoutValidation("X-HTTP-Method", "PATCH");
+
+            if (!string.IsNullOrEmpty(accessToken))
+            {
+                requestMessage.Headers.TryAddWithoutValidation("Authorization", "Bearer " + accessToken);
+            }
+
+            var contentText = Newtonsoft.Json.JsonConvert.SerializeObject(patchBody);
+            var content = new StringContent(contentText, System.Text.Encoding.UTF8, "application/json");
+            requestMessage.Content = content;
+
+            var responseMessage = await httpClient.SendAsync(requestMessage);
+            responseMessage.EnsureSuccessStatusCode();
+        }
+
         public async Task<bool> UploadFileContentsFromStreamAsync(Stream fileStream, string itemUrl, string accessToken)
         {
             if (fileStream.Length > MAX_UPLOAD_SIZE)

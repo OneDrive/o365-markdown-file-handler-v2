@@ -11,8 +11,10 @@
 
 @section ToolbarButtons
 {
-    <li><a href="#" onclick="SaveChangesToHost(); return false">Save</a></li>
-    <li><a href="#">Delete</a></li>
+    <li><a href="#" onclick="saveChangesToHost()">Save</a></li>
+    <li><a href="#" onclick="renameFile()">Rename</a></li>
+    <li><a href="#" onclick="shareLinkToFile()">Get a Link</a></li>
+    <li><a href="#" onclick="closeEditor()">Close</a></li>
 }
 
 @if (!string.IsNullOrEmpty(Model.ErrorMessage))
@@ -27,6 +29,7 @@
     {
     @Html.Hidden("item", Model.ActivationParameters.ItemUrl);
     @Html.Hidden("client", Model.ActivationParameters.Client);
+    @Html.Hidden("filename", Model.Filename);
     @Html.TextArea("content", Model.MarkdownFileContent);
     }
 }
@@ -36,19 +39,43 @@
         forceSync: true
     });
 
-    function SaveChangesToHost()
+    var hasUnsavedChanges = false;
+    $("input#content").bind("input change", function () {
+      hasUnsavedChanges = true;
+    });
+
+    function saveChangesToHost(actionName)
     {
+      if (actionName == null) actionName = "Save";
+
         var data = $("form").serialize();
-        $.post("/FileHandler/Save", data, function(data, textStatus, xhr) {
-            if (!data.Success)
-            {
+        $.post("/FileHandler/" + actionName, data, function(data, textStatus, xhr) {
+
+            if (!data.Success) {
                 window.alert("An error occured saving this file: " + data.Error);
-            }
-            else
-            {
+            } else {
+                hasUnsavedChanges = true;
                 window.alert("Saved changes.");
             }
         });
+    }
+
+    function closeEditor() {
+      // TODO: Prompt to save changes
+      window.close();
+    }
+
+    function renameFile() {
+      var newName = window.prompt("Rename", $("input#filename").val());
+      if (newName != null && newName.length > 0) {
+        $("input#filename").val(newName);
+        saveChangesToHost("UpdateMetadata");
+      }
+    }
+
+    function shareLinkToFile() {
+
+      window.alert("NYI");
     }
 </script>
 

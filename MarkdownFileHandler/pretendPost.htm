@@ -11,6 +11,7 @@
         <option value="preview">Preview</option>
         <option value="newfile">New File</option>
         <option value="edit">Edit</option>
+      <option value="save">Save</option>
     </select>
 
     <form action="/filehandler/converttopdf" method="post" target="_blank" id="post1">
@@ -38,6 +39,11 @@
                 <td>User Id</td>
                 <td><input type="text" name="userId" value="rgregg@microsoft.com" style="width: 320px" /></td>
             </tr>
+          <tr>
+            <td>Filename</td>
+            <td><input type="text" name="filename" value="" style="width: 320px" /></td>
+          </tr>
+
             <tr>
                 <td colspan="2"><input type="submit" value="POST!" /></td>
             </tr>

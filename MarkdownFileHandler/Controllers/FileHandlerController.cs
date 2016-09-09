@@ -73,7 +73,26 @@ namespace MarkdownFileHandler.Controllers
 
             try
             {
-                return Json(await SaveChangesToFileAsync(input));
+                return Json(await SaveChangesToFileContentAsync(input));
+            }
+            catch (Exception ex)
+            {
+                return Json(new SaveResults { Success = false, Error = ex.Message });
+            }
+        }
+
+        public async Task<ActionResult> UpdateMetadata()
+        {
+            var input = GetActivationParameters();
+
+            if (input == null || !input.CanWrite)
+            {
+                return Json(new SaveResults() { Success = false, Error = "Missing activation parameters." });
+            }
+
+            try
+            {
+                return Json(await PatchFileMetadataAsync(input));
             }
             catch (Exception ex)
             {
@@ -198,7 +217,7 @@ namespace MarkdownFileHandler.Controllers
             return MarkdownFileModel.GetWriteableModel(input, string.Empty, markdownContent);
         }
 
-        private async Task<SaveResults> SaveChangesToFileAsync(FileHandlerActivationParameters input)
+        private async Task<SaveResults> SaveChangesToFileContentAsync(FileHandlerActivationParameters input)
         {
             // Retrieve an access token so we can make API calls
             var resourceUrl = AuthHelper.GetResourceFromUrl(input.ItemUrl);
@@ -219,6 +238,32 @@ namespace MarkdownFileHandler.Controllers
 
                 var result = await HttpHelper.Default.UploadFileContentsFromStreamAsync(stream, input.ItemUrl, accessToken);
                 return new SaveResults { Success = result };
+            }
+            catch (Exception ex)
+            {
+                return new SaveResults { Error = ex.Message };
+            }
+        }
+
+        private async Task<SaveResults> PatchFileMetadataAsync(FileHandlerActivationParameters input)
+        {
+            // Retrieve an access token so we can make API calls
+            var resourceUrl = AuthHelper.GetResourceFromUrl(input.ItemUrl);
+            string accessToken = null;
+            try
+            {
+                accessToken = await AuthHelper.GetUserAccessTokenSilentAsync(resourceUrl);
+            }
+            catch (Exception ex)
+            {
+                return new SaveResults { Error = ex.Message };
+            }
+
+            // Upload the new file content
+            try
+            {
+                await HttpHelper.Default.PatchItemMetadataAsync(new { name = input.Filename }, input.ItemUrl, accessToken);
+                return new SaveResults { Success = true };
             }
             catch (Exception ex)
             {

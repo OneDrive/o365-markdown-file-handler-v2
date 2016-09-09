@@ -274,8 +274,6 @@
     <Content Include="Views\FileHandler\Preview.cshtml" />
     <Content Include="Views\Home\Error.cshtml" />
     <Content Include="Views\Shared\_LayoutFileHandler.cshtml" />
-    <Content Include="Views\FileHandler\ConvertToPDF.cshtml" />
-    <Content Include="Views\FileHandler\CompressFiles.cshtml" />
     <Content Include="Views\FileHandler\AsyncJobStatus.cshtml" />
     <Content Include="Views\Shared\_LayoutAsyncJob.cshtml" />
     <Content Include="Views\FileHandler\Edit.cshtml" />

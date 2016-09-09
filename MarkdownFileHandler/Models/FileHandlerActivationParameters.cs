@@ -44,6 +44,9 @@ namespace MarkdownFileHandler.Models
                         case "userId":
                             this.UserId = collection[key];
                             break;
+                        case "filename":
+                            this.Filename = collection[key];
+                            break;
                         case "items":
                             if (!string.IsNullOrEmpty(collection[key]))
                                 this.ItemUrls = ConvertFromJsonArray<string>(collection[key]).ToArray();
@@ -99,6 +102,8 @@ namespace MarkdownFileHandler.Models
         /// The content of a file, used when saving changes back from the client
         /// </summary>
         public string FileContent { get; set; }
+
+        public string Filename { get; set; }
 
         public Dictionary<string, string> OtherValues { get; private set; }
 
