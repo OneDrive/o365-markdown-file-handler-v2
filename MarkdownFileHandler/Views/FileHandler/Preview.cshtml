@@ -3,7 +3,8 @@
     ViewBag.Title = "Preview";
     ViewBag.HideNavigationBar = true;
 }
-@Model.FileContent
+
+@Model.HtmlFileContent
 
 @if (Model.ErrorMessage != null)
 {
