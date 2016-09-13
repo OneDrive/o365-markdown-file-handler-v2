@@ -239,7 +239,8 @@
     <Content Include="Content\Site.css" />
     <Content Include="images\markdown.png" />
     <Content Include="LoadingSpinner.css" />
-    <Content Include="pretendPost.htm" />
+    <Content Include="invokeFileHandler.htm" />
+    <Content Include="OneDrive6.debug.js" />
     <Content Include="Scripts\bootstrap.js" />
     <Content Include="Scripts\bootstrap.min.js" />
     <None Include="Scripts\jquery-1.10.2.intellisense.js" />
