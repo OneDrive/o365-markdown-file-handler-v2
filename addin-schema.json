@@ -6,11 +6,11 @@
       "properties": [
         {
           "key": "extension",
-          "value": "docx;pdf;mdown;md;xlsx;pptx"
+          "value": "*"
         },
         {
           "key": "actions",
-          "value": "{\"actions\":[{\"title\":\"Convert to PDF\",\"url\":\"https://markdownfilehandler.azurewebsites.net/filehandler/convertToPdf\",\"platform\":[\"web\"],\"selection\":\"single\"},{\"title\":\"Add to ZIP file\",\"url\":\"https://markdownfilehandler.azurewebsites.net/filehandler/compressFiles\",\"platform\":[\"web\"],\"selection\":\"multiple\", \"allowFolders\": true}]}"
+          "value": "{\"actions\":[{\"title\":\"Convert to PDF\",\"url\":\"https://markdownfilehandler.azurewebsites.net/filehandler/convertToPdf\",\"platform\":[\"web\"],\"selection\":\"single\"},{\"title\":\"Add to ZIP file\",\"url\":\"https://markdownfilehandler.azurewebsites.net/filehandler/compressFiles\",\"platform\":[\"web\"],\"selection\":\"multiple\", \"allowFolders\": true }]}"
         }
       ]
     },
@@ -19,13 +19,16 @@
       "type": "FileHandler",
       "properties": [
         {
-          "key": "extension", "value": "pdf"
+          "key": "extension",
+          "value": "pdf"
         },
         {
-          "key": "openUrl", "value": "https://markdownfilehandler.azurewebsites.net/filehandler/openpdf"
+          "key": "openUrl",
+          "value": "https://markdownfilehandler.azurewebsites.net/filehandler/openpdf"
         },
         {
-          "key": "newFileUrl", "value": "https://markdownfilehandler.azurewebsites.net/filehandler/newpdf"
+          "key": "newFileUrl",
+          "value": "https://markdownfilehandler.azurewebsites.net/filehandler/newpdf"
         }
       ]
     },
@@ -34,24 +37,29 @@
       "type": "FileHandler",
       "properties": [
         {
-          "key": "extension", "value": "mdown"
+          "key": "extension",
+          "value": "mdown"
         },
         {
-          "key": "fileIcon", "value": "https://markdownfilehandler.azurewebsites.net/images/markdown.png"
+          "key": "fileIcon",
+          "value": "https://markdownfilehandler.azurewebsites.net/images/markdown.png"
         },
         {
-          "key": "openUrl", "value": "https://markdownfilehandler.azurewebsites.net/filehandler/open"
+          "key": "openUrl",
+          "value": "https://markdownfilehandler.azurewebsites.net/filehandler/open"
         },
         {
-          "key": "previewUrl", "value": "https://markdownfilehandler.azurewebsites.net/filehandler/preview"
+          "key": "previewUrl",
+          "value": "https://markdownfilehandler.azurewebsites.net/filehandler/preview"
         },
         {
-          "key": "newFileUrl", "value": "https://markdownfilehandler.azurewebsites.net/filehandler/newfile"
+          "key": "newFileUrl",
+          "value": "https://markdownfilehandler.azurewebsites.net/filehandler/newfile"
         },
         {
-          "key": "fileTypeName", "value": "Markdown Text File"
+          "key": "fileTypeName",
+          "value": "Markdown Text File"
         }
-
       ]
     }
   ]
