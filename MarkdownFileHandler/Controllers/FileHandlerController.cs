@@ -125,10 +125,10 @@ namespace MarkdownFileHandler.Controllers
             FileHandlerActions.AsyncJob job = new FileHandlerActions.AsyncJob(pdfConverter);
             job.Status.OriginalParameters = input.ToDictionary();
 
-            var resourceUrl = AuthHelper.GetResourceFromUrl(input.ItemUrl);
+            var resourceUrl = AuthHelper.GetResourceFromUrl(input.SingleItemUrl);
             var accessToken = await AuthHelper.GetUserAccessTokenSilentAsync(resourceUrl);
 
-            HostingEnvironment.QueueBackgroundWorkItem(ct => job.Begin(new string[] { input.ItemUrl }, accessToken));
+            HostingEnvironment.QueueBackgroundWorkItem(ct => job.Begin(new string[] { input.SingleItemUrl }, accessToken));
             return View("AsyncAction", new AsyncActionModel { JobIdentifier = job.Id, Status = job.Status, Title = "Convert to PDF" });
         }
 
@@ -183,7 +183,7 @@ namespace MarkdownFileHandler.Controllers
 
         private async Task<MarkdownFileModel> GetFileHandlerModelAsync(FileHandlerActivationParameters input, FileAccess access)
         {
-            if (!string.IsNullOrEmpty(input.ItemUrl))
+            if (!string.IsNullOrEmpty(input.SingleItemUrl))
             {
                 return await GetFileHandlerModelV2Async(input);
             }
@@ -220,7 +220,7 @@ namespace MarkdownFileHandler.Controllers
         private async Task<SaveResults> SaveChangesToFileContentAsync(FileHandlerActivationParameters input)
         {
             // Retrieve an access token so we can make API calls
-            var resourceUrl = AuthHelper.GetResourceFromUrl(input.ItemUrl);
+            var resourceUrl = AuthHelper.GetResourceFromUrl(input.SingleItemUrl);
             string accessToken = null;
             try
             {
@@ -236,7 +236,7 @@ namespace MarkdownFileHandler.Controllers
             {
                 var stream = new MemoryStream(System.Text.Encoding.UTF8.GetBytes(input.FileContent));
 
-                var result = await HttpHelper.Default.UploadFileContentsFromStreamAsync(stream, input.ItemUrl, accessToken);
+                var result = await HttpHelper.Default.UploadFileContentsFromStreamAsync(stream, input.SingleItemUrl, accessToken);
                 return new SaveResults { Success = result };
             }
             catch (Exception ex)
@@ -248,7 +248,7 @@ namespace MarkdownFileHandler.Controllers
         private async Task<SaveResults> PatchFileMetadataAsync(FileHandlerActivationParameters input)
         {
             // Retrieve an access token so we can make API calls
-            var resourceUrl = AuthHelper.GetResourceFromUrl(input.ItemUrl);
+            var resourceUrl = AuthHelper.GetResourceFromUrl(input.SingleItemUrl);
             string accessToken = null;
             try
             {
@@ -262,7 +262,7 @@ namespace MarkdownFileHandler.Controllers
             // Upload the new file content
             try
             {
-                await HttpHelper.Default.PatchItemMetadataAsync(new { name = input.Filename }, input.ItemUrl, accessToken);
+                await HttpHelper.Default.PatchItemMetadataAsync(new { name = input.Filename }, input.SingleItemUrl, accessToken);
                 return new SaveResults { Success = true };
             }
             catch (Exception ex)
@@ -274,7 +274,7 @@ namespace MarkdownFileHandler.Controllers
         private async Task<MarkdownFileModel> GetFileHandlerModelV2Async(FileHandlerActivationParameters input)
         {
             // Retrieve an access token so we can make API calls
-            var resourceUrl = AuthHelper.GetResourceFromUrl(input.ItemUrl);
+            var resourceUrl = AuthHelper.GetResourceFromUrl(input.SingleItemUrl);
             string accessToken = null;
             try
             {
@@ -289,7 +289,7 @@ namespace MarkdownFileHandler.Controllers
             FileData results = null;
             try
             {
-                results = await HttpHelper.Default.GetStreamContentForItemUrlAsync(input.ItemUrl, accessToken);
+                results = await HttpHelper.Default.GetStreamContentForItemUrlAsync(input.SingleItemUrl, accessToken);
             }
             catch (Exception ex)
             {

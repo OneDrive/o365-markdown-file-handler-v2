@@ -38,9 +38,6 @@ namespace MarkdownFileHandler.Models
                         case "client":
                             this.Client = collection[key];
                             break;
-                        case "item":
-                            this.ItemUrl = collection[key];
-                            break;
                         case "userId":
                             this.UserId = collection[key];
                             break;
@@ -84,14 +81,23 @@ namespace MarkdownFileHandler.Models
         public string Client { get; set; }
 
         /// <summary>
-        /// For a single item action, the OneDrive API URL that can be used to access the item.
-        /// </summary>
-        public string ItemUrl { get; set; }
-        
-        /// <summary>
-        /// A collection of OneDrive API URLs that can be used to access the items the file handler is being invoked with
+        /// A collection of Microsoft Graph API URLs that can be used to access the items the file handler is being invoked with
         /// </summary>
         public string[] ItemUrls { get; set; }
+
+        /// <summary>
+        /// Returns a single Microsoft Graph API URL that can be used to access an item in a single selection scenario.
+        /// </summary>
+        public string SingleItemUrl
+        {
+            get
+            {
+                if (ItemUrls != null && ItemUrls.Length == 1)
+                    return ItemUrls[0];
+                else
+                    return null;
+            }
+        }
 
         /// <summary>
         /// A unique identifer for the logged in user who invoked the file handler.
@@ -111,7 +117,7 @@ namespace MarkdownFileHandler.Models
         {
             get
             {
-                if (!string.IsNullOrEmpty(this.ItemUrl))
+                if (!string.IsNullOrEmpty(this.SingleItemUrl))
                     return true;
 
                 return !(string.IsNullOrWhiteSpace(this.ResourceId) || string.IsNullOrWhiteSpace(this.FileGet));
@@ -122,7 +128,7 @@ namespace MarkdownFileHandler.Models
         {
             get
             {
-                if (!string.IsNullOrEmpty(this.ItemUrl))
+                if (!string.IsNullOrEmpty(this.SingleItemUrl))
                     return true;
 
                 return CanRead && !string.IsNullOrWhiteSpace(this.FilePut);
