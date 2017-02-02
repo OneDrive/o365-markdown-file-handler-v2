@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.Specialized;
+using System.Linq;
 using System.Text;
 using System.Web;
 
@@ -11,7 +12,6 @@ namespace MarkdownFileHandler.Models
         private NameValueCollection sourceParameters;
         public FileHandlerActivationParameters(NameValueCollection collection)
         {
-
             sourceParameters = collection;
             this.OtherValues = new Dictionary<string, string>();
             if (collection != null)
@@ -20,20 +20,8 @@ namespace MarkdownFileHandler.Models
                 {
                     switch(key)
                     {
-                        case "resourceId":
-                            this.ResourceId = collection[key];
-                            break;
                         case "cultureName":
                             this.CultureName = collection[key];
-                            break;
-                        case "fileGet":
-                            this.FileGet = collection[key];
-                            break;
-                        case "filePut":
-                            this.FilePut = collection[key];
-                            break;
-                        case "fileId":
-                            this.FileId = collection[key];
                             break;
                         case "client":
                             this.Client = collection[key];
@@ -45,8 +33,7 @@ namespace MarkdownFileHandler.Models
                             this.Filename = collection[key];
                             break;
                         case "items":
-                            if (!string.IsNullOrEmpty(collection[key]))
-                                this.ItemUrls = ConvertFromJsonArray<string>(collection[key]).ToArray();
+                            this.Items = collection[key];
                             break;
                         case "content":
                             this.FileContent = collection[key];
@@ -69,11 +56,15 @@ namespace MarkdownFileHandler.Models
             return result;
         }
 
-        public string ResourceId { get; set; }
+        /// <summary>
+        /// Resource ID for authentication purposes
+        /// </summary>
+        public string ResourceId { get { return "https://graph.microsoft.com"; } }
+
+        /// <summary>
+        /// Locale for the current user's language
+        /// </summary>
         public string CultureName { get; set; }
-        public string FileGet { get; set; }
-        public string FilePut { get; set; }
-        public string FileId { get; set; }
 
         /// <summary>
         /// The source service that invoked the file handler
@@ -83,20 +74,26 @@ namespace MarkdownFileHandler.Models
         /// <summary>
         /// A collection of Microsoft Graph API URLs that can be used to access the items the file handler is being invoked with
         /// </summary>
-        public string[] ItemUrls { get; set; }
+        public string Items { get; set; }
+
+        /// <summary>
+        /// Helper property to retrieve item urls
+        /// </summary>
+        public string[] ItemUrls()
+        {
+            if (!string.IsNullOrEmpty(Items))
+                return ConvertFromJsonArray<string>(this.Items).ToArray();
+            else
+                return new string[0];
+        }
+        
 
         /// <summary>
         /// Returns a single Microsoft Graph API URL that can be used to access an item in a single selection scenario.
         /// </summary>
-        public string SingleItemUrl
+        public string SingleItemUrl()
         {
-            get
-            {
-                if (ItemUrls != null && ItemUrls.Length == 1)
-                    return ItemUrls[0];
-                else
-                    return null;
-            }
+            return ItemUrls().FirstOrDefault();
         }
 
         /// <summary>
@@ -112,28 +109,6 @@ namespace MarkdownFileHandler.Models
         public string Filename { get; set; }
 
         public Dictionary<string, string> OtherValues { get; private set; }
-
-        public bool CanRead
-        {
-            get
-            {
-                if (!string.IsNullOrEmpty(this.SingleItemUrl))
-                    return true;
-
-                return !(string.IsNullOrWhiteSpace(this.ResourceId) || string.IsNullOrWhiteSpace(this.FileGet));
-            }
-        }
-
-        public bool CanWrite
-        {
-            get
-            {
-                if (!string.IsNullOrEmpty(this.SingleItemUrl))
-                    return true;
-
-                return CanRead && !string.IsNullOrWhiteSpace(this.FilePut);
-            }
-        }
 
         public System.Web.Mvc.MvcHtmlString OtherPropertyValues
         {

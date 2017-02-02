@@ -20,6 +20,7 @@
 
 @using (Html.BeginForm("Edit", "FileHandler"))
 {
-    @Html.Hidden("item", Model.ActivationParameters.ItemUrl);
+    @Html.Hidden("items", Model.ActivationParameters.Items);
+    @Html.Hidden("resourceId", Model.ActivationParameters.ResourceId);
     @Html.Hidden("client", Model.ActivationParameters.Client);
  }

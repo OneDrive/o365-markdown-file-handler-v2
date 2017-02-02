@@ -22,12 +22,6 @@ namespace MarkdownFileHandler.Controllers
         public async Task<ActionResult> Preview()
         {
             var input = GetActivationParameters();
-
-            if (!input.CanRead)
-            {
-                return View(MarkdownFileModel.GetErrorModel(input, "Required parameters are missing. Cannot read the source file."));
-            }
-
             return View(await GetFileHandlerModelAsync(input, FileAccess.Read));
         }
 
@@ -38,35 +32,19 @@ namespace MarkdownFileHandler.Controllers
         public async Task<ActionResult> Open()
         {
             var input = GetActivationParameters();
-
-            if (!input.CanWrite)
-            {
-                return View(MarkdownFileModel.GetErrorModel(input, "Required parameters are missing. Cannot write the source file."));
-            }
-            //TempData["activationParameters"] = input;
-
             return View(await GetFileHandlerModelAsync(input, FileAccess.Read));
         }
 
         public async Task<ActionResult> Edit()
         {
-            //FileHandlerActivationParameters input = (FileHandlerActivationParameters)TempData["activationParameters"];
             var input = GetActivationParameters();
-
-            if (input == null || !input.CanWrite)
-            {
-                return View(MarkdownFileModel.GetErrorModel(input, "Required parameters are missing. Cannot write the source file."));
-            }
-            
             return View(await GetFileHandlerModelAsync(input, FileAccess.ReadWrite));
-
         }
 
         public async Task<ActionResult> Save()
         {
             var input = GetActivationParameters();
-
-            if (input == null || !input.CanWrite)
+            if (input == null)
             {
                 return Json(new SaveResults() { Success = false, Error = "Missing activation parameters." });
             }
@@ -85,7 +63,7 @@ namespace MarkdownFileHandler.Controllers
         {
             var input = GetActivationParameters();
 
-            if (input == null || !input.CanWrite)
+            if (input == null)
             {
                 return Json(new SaveResults() { Success = false, Error = "Missing activation parameters." });
             }
@@ -107,12 +85,6 @@ namespace MarkdownFileHandler.Controllers
         public async Task<ActionResult> NewFile()
         {
             var input = GetActivationParameters();
-
-            if (!input.CanWrite)
-            {
-                return View(MarkdownFileModel.GetErrorModel(input, "Required parameters are missing. Cannot write the source file."));
-            }
-
             return View("Edit", await GetFileHandlerModelAsync(input, FileAccess.Write));
         }
 
@@ -125,10 +97,9 @@ namespace MarkdownFileHandler.Controllers
             FileHandlerActions.AsyncJob job = new FileHandlerActions.AsyncJob(pdfConverter);
             job.Status.OriginalParameters = input.ToDictionary();
 
-            var resourceUrl = AuthHelper.GetResourceFromUrl(input.SingleItemUrl);
-            var accessToken = await AuthHelper.GetUserAccessTokenSilentAsync(resourceUrl);
+            var accessToken = await AuthHelper.GetUserAccessTokenSilentAsync(input.ResourceId);
 
-            HostingEnvironment.QueueBackgroundWorkItem(ct => job.Begin(new string[] { input.SingleItemUrl }, accessToken));
+            HostingEnvironment.QueueBackgroundWorkItem(ct => job.Begin(new string[] { input.SingleItemUrl() }, accessToken));
             return View("AsyncAction", new AsyncActionModel { JobIdentifier = job.Id, Status = job.Status, Title = "Convert to PDF" });
         }
 
@@ -146,10 +117,9 @@ namespace MarkdownFileHandler.Controllers
             FileHandlerActions.AsyncJob job = new FileHandlerActions.AsyncJob(addToZipFile);
             job.Status.OriginalParameters = input.ToDictionary();
 
-            var resourceUrl = AuthHelper.GetResourceFromUrl(input.ItemUrls.First());
-            var accessToken = await AuthHelper.GetUserAccessTokenSilentAsync(resourceUrl);
+            var accessToken = await AuthHelper.GetUserAccessTokenSilentAsync(input.ResourceId);
 
-            HostingEnvironment.QueueBackgroundWorkItem(ct => job.Begin(input.ItemUrls, accessToken));
+            HostingEnvironment.QueueBackgroundWorkItem(ct => job.Begin(input.ItemUrls(), accessToken));
             return View("AsyncAction", new AsyncActionModel { JobIdentifier = job.Id, Status = job.Status, Title = "Add to ZIP" });
         }
 
@@ -183,11 +153,95 @@ namespace MarkdownFileHandler.Controllers
 
         private async Task<MarkdownFileModel> GetFileHandlerModelAsync(FileHandlerActivationParameters input, FileAccess access)
         {
-            if (!string.IsNullOrEmpty(input.SingleItemUrl))
+            if (!string.IsNullOrEmpty(input.SingleItemUrl()))
             {
                 return await GetFileHandlerModelV2Async(input);
             }
 
+            throw new InvalidOperationException("Something went wrong.");
+            //// Retrieve an access token so we can make API calls
+            //string accessToken = null;
+            //try
+            //{
+            //    accessToken = await AuthHelper.GetUserAccessTokenSilentAsync(input.ResourceId);
+            //}
+            //catch (Exception ex)
+            //{
+            //    return MarkdownFileModel.GetErrorModel(input, ex);
+            //}
+
+            //// Get file content
+            //Stream fileContentStream = null;
+            //try
+            //{
+            //    fileContentStream = await GetFileContentAsync(input, accessToken);
+            //}
+            //catch (Exception ex)
+            //{
+            //    return MarkdownFileModel.GetErrorModel(input, ex);
+            //}
+
+            //// Convert the stream into text for rendering
+            //StreamReader reader = new StreamReader(fileContentStream);
+            //var markdownContent = await reader.ReadToEndAsync();
+
+            //return MarkdownFileModel.GetWriteableModel(input, string.Empty, markdownContent);
+        }
+
+        private async Task<SaveResults> SaveChangesToFileContentAsync(FileHandlerActivationParameters input)
+        {
+            // Retrieve an access token so we can make API calls
+            string accessToken = null;
+            try
+            {
+                accessToken = await AuthHelper.GetUserAccessTokenSilentAsync(input.ResourceId);
+            }
+            catch (Exception ex)
+            {
+                return new SaveResults { Error = ex.Message };
+            }
+
+            // Upload the new file content
+            try
+            {
+                var stream = new MemoryStream(System.Text.Encoding.UTF8.GetBytes(input.FileContent));
+
+                var result = await HttpHelper.Default.UploadFileContentsFromStreamAsync(stream, input.SingleItemUrl(), accessToken);
+                return new SaveResults { Success = result };
+            }
+            catch (Exception ex)
+            {
+                return new SaveResults { Error = ex.Message };
+            }
+        }
+
+        private async Task<SaveResults> PatchFileMetadataAsync(FileHandlerActivationParameters input)
+        {
+            // Retrieve an access token so we can make API calls
+            string accessToken = null;
+            try
+            {
+                accessToken = await AuthHelper.GetUserAccessTokenSilentAsync(input.ResourceId);
+            }
+            catch (Exception ex)
+            {
+                return new SaveResults { Error = ex.Message };
+            }
+
+            // Upload the new file content
+            try
+            {
+                await HttpHelper.Default.PatchItemMetadataAsync(new { name = input.Filename }, input.SingleItemUrl(), accessToken);
+                return new SaveResults { Success = true };
+            }
+            catch (Exception ex)
+            {
+                return new SaveResults { Error = ex.Message };
+            }
+        }
+
+        private async Task<MarkdownFileModel> GetFileHandlerModelV2Async(FileHandlerActivationParameters input)
+        {
             // Retrieve an access token so we can make API calls
             string accessToken = null;
             try
@@ -200,96 +254,10 @@ namespace MarkdownFileHandler.Controllers
             }
 
             // Get file content
-            Stream fileContentStream = null;
-            try
-            {
-                fileContentStream = await GetFileContentAsync(input, accessToken);
-            }
-            catch (Exception ex)
-            {
-                return MarkdownFileModel.GetErrorModel(input, ex);
-            }
-
-            // Convert the stream into text for rendering
-            StreamReader reader = new StreamReader(fileContentStream);
-            var markdownContent = await reader.ReadToEndAsync();
-
-            return MarkdownFileModel.GetWriteableModel(input, string.Empty, markdownContent);
-        }
-
-        private async Task<SaveResults> SaveChangesToFileContentAsync(FileHandlerActivationParameters input)
-        {
-            // Retrieve an access token so we can make API calls
-            var resourceUrl = AuthHelper.GetResourceFromUrl(input.SingleItemUrl);
-            string accessToken = null;
-            try
-            {
-                accessToken = await AuthHelper.GetUserAccessTokenSilentAsync(resourceUrl);
-            }
-            catch (Exception ex)
-            {
-                return new SaveResults { Error = ex.Message };
-            }
-
-            // Upload the new file content
-            try
-            {
-                var stream = new MemoryStream(System.Text.Encoding.UTF8.GetBytes(input.FileContent));
-
-                var result = await HttpHelper.Default.UploadFileContentsFromStreamAsync(stream, input.SingleItemUrl, accessToken);
-                return new SaveResults { Success = result };
-            }
-            catch (Exception ex)
-            {
-                return new SaveResults { Error = ex.Message };
-            }
-        }
-
-        private async Task<SaveResults> PatchFileMetadataAsync(FileHandlerActivationParameters input)
-        {
-            // Retrieve an access token so we can make API calls
-            var resourceUrl = AuthHelper.GetResourceFromUrl(input.SingleItemUrl);
-            string accessToken = null;
-            try
-            {
-                accessToken = await AuthHelper.GetUserAccessTokenSilentAsync(resourceUrl);
-            }
-            catch (Exception ex)
-            {
-                return new SaveResults { Error = ex.Message };
-            }
-
-            // Upload the new file content
-            try
-            {
-                await HttpHelper.Default.PatchItemMetadataAsync(new { name = input.Filename }, input.SingleItemUrl, accessToken);
-                return new SaveResults { Success = true };
-            }
-            catch (Exception ex)
-            {
-                return new SaveResults { Error = ex.Message };
-            }
-        }
-
-        private async Task<MarkdownFileModel> GetFileHandlerModelV2Async(FileHandlerActivationParameters input)
-        {
-            // Retrieve an access token so we can make API calls
-            var resourceUrl = AuthHelper.GetResourceFromUrl(input.SingleItemUrl);
-            string accessToken = null;
-            try
-            {
-                accessToken = await AuthHelper.GetUserAccessTokenSilentAsync(resourceUrl);
-            }
-            catch (Exception ex)
-            {
-                return MarkdownFileModel.GetErrorModel(input, ex);
-            }
-
-            // Get file content
             FileData results = null;
             try
             {
-                results = await HttpHelper.Default.GetStreamContentForItemUrlAsync(input.SingleItemUrl, accessToken);
+                results = await HttpHelper.Default.GetStreamContentForItemUrlAsync(input.SingleItemUrl(), accessToken);
             }
             catch (Exception ex)
             {
@@ -304,51 +272,51 @@ namespace MarkdownFileHandler.Controllers
         }
 
 
-        /// <summary>
-        /// Download the contents of the file from the server and return as a stream.
-        /// </summary>
-        /// <param name="input"></param>
-        /// <param name="accessToken"></param>
-        /// <returns></returns>
-        private async Task<Stream> GetFileContentAsync(FileHandlerActivationParameters input, string accessToken)
-        {
-            // Use the input.FileGet URL to download the contents of the file
-            var request = WebRequest.CreateHttp(input.FileGet);
-            request.Headers.Add("Authorization", "Bearer " + accessToken);
-            request.AllowAutoRedirect = false;
+        ///// <summary>
+        ///// Download the contents of the file from the server and return as a stream.
+        ///// </summary>
+        ///// <param name="input"></param>
+        ///// <param name="accessToken"></param>
+        ///// <returns></returns>
+        //private async Task<Stream> GetFileContentAsync(FileHandlerActivationParameters input, string accessToken)
+        //{
+        //    // Use the input.FileGet URL to download the contents of the file
+        //    var request = WebRequest.CreateHttp(input.FileGet);
+        //    request.Headers.Add("Authorization", "Bearer " + accessToken);
+        //    request.AllowAutoRedirect = false;
 
-            HttpWebResponse httpResponse = null;
+        //    HttpWebResponse httpResponse = null;
 
-            try
-            {
-                var response = await request.GetResponseAsync();
-                httpResponse = response as HttpWebResponse;
-            }
-            catch (WebException ex)
-            {
-                httpResponse = ex.Response as HttpWebResponse;
-            }
+        //    try
+        //    {
+        //        var response = await request.GetResponseAsync();
+        //        httpResponse = response as HttpWebResponse;
+        //    }
+        //    catch (WebException ex)
+        //    {
+        //        httpResponse = ex.Response as HttpWebResponse;
+        //    }
 
-            if (httpResponse == null)
-            {
-                throw new WebException("Request was unsuccessful.");
-            }
+        //    if (httpResponse == null)
+        //    {
+        //        throw new WebException("Request was unsuccessful.");
+        //    }
 
-            if (httpResponse.StatusCode == HttpStatusCode.OK)
-            {
-                MemoryStream responseStream = new MemoryStream();
-                await httpResponse.GetResponseStream().CopyToAsync(responseStream);
+        //    if (httpResponse.StatusCode == HttpStatusCode.OK)
+        //    {
+        //        MemoryStream responseStream = new MemoryStream();
+        //        await httpResponse.GetResponseStream().CopyToAsync(responseStream);
 
-                // Reset the memory stream
-                responseStream.Seek(0, SeekOrigin.Begin);
+        //        // Reset the memory stream
+        //        responseStream.Seek(0, SeekOrigin.Begin);
 
-                return responseStream;
-            }
-            else
-            {
-                throw new WebException("Http response had invalid status code: " + httpResponse.StatusCode);
-            }
-        }
+        //        return responseStream;
+        //    }
+        //    else
+        //    {
+        //        throw new WebException("Http response had invalid status code: " + httpResponse.StatusCode);
+        //    }
+        //}
 
         
     }

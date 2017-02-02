@@ -45,11 +45,11 @@ namespace MarkdownFileHandler
             return null;
         }
 
-        public static string GetResourceFromUrl(string url)
-        {
-            Uri uri = new Uri(url);
-            return uri.GetLeftPart(UriPartial.Authority);
-        }
+        //public static string GetResourceFromUrl(string url)
+        //{
+        //    Uri uri = new Uri(url);
+        //    return uri.GetLeftPart(UriPartial.Authority);
+        //}
 
         public static string GetUserId()
         {

@@ -27,10 +27,12 @@
 {
     if (null != Model.ActivationParameters)
     {
-    @Html.Hidden("item", Model.ActivationParameters.ItemUrl);
-    @Html.Hidden("client", Model.ActivationParameters.Client);
-    @Html.Hidden("filename", Model.Filename);
-    @Html.TextArea("content", Model.MarkdownFileContent);
+        @Html.Hidden("items", Model.ActivationParameters.Items);
+        @Html.Hidden("client", Model.ActivationParameters.Client);
+        @Html.Hidden("resourceId", Model.ActivationParameters.ResourceId);
+        @Html.Hidden("userId", Model.ActivationParameters.UserId);
+        @Html.Hidden("filename", Model.Filename);
+        @Html.TextArea("content", Model.MarkdownFileContent);
     }
 }
 <script>
