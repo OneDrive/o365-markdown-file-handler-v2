@@ -5,7 +5,6 @@ using System.Web;
 using System.Threading.Tasks;
 using System.Net.Http;
 using System.IO;
-using Microsoft.OneDrive.Sdk;
 
 namespace FileHandlerActions
 {
@@ -23,10 +22,10 @@ namespace FileHandlerActions
             var baseUrl = ActionHelpers.ParseBaseUrl(oneDriveApiSourceUrl);
 
             // Make an HTTP GET request to oneDriveApiSourceUrl to get item metadata (Microsoft.OneDrive.Sdk.Item)
-            Microsoft.OneDrive.Sdk.Item sourceItem = null;
+            Microsoft.Graph.DriveItem sourceItem = null;
             try
             {
-                sourceItem = await HttpHelper.Default.GetMetadataForUrlAsync<Microsoft.OneDrive.Sdk.Item>(oneDriveApiSourceUrl, accessToken);
+                sourceItem = await HttpHelper.Default.GetMetadataForUrlAsync<Microsoft.Graph.DriveItem>(oneDriveApiSourceUrl, accessToken);
             }
             catch (Exception ex)
             {

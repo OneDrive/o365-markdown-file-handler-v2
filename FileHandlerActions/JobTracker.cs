@@ -1,16 +1,15 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Microsoft.OneDrive.Sdk;
-
-namespace FileHandlerActions
+﻿namespace FileHandlerActions
 {
+    using System;
+    using System.Collections.Generic;
+
+    /// <summary>
+    /// Provides a limited use way of tracking asynchornous work for long running actions that span multiple HTTP requests.
+    /// This is not a sufficent implementation to be used in a production service.
+    /// </summary>
     public static class JobTracker
     {
         public static Dictionary<string, JobStatus> TrackedJobs = new Dictionary<string, JobStatus>();
-
 
         /// <summary>
         /// Queue a job into the job tracker and get back the unique identifier for the job

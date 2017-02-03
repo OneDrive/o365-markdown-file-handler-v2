@@ -11,4 +11,9 @@ namespace MarkdownFileHandler.Models
 
         public string Error { get; set; }
     }
+
+    public class ShareLinkResults : SaveResults
+    {
+        public string SharingUrl { get; set; }
+    }
 }

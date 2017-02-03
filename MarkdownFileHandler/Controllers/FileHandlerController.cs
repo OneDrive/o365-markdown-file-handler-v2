@@ -22,7 +22,7 @@ namespace MarkdownFileHandler.Controllers
         public async Task<ActionResult> Preview()
         {
             var input = GetActivationParameters();
-            return View(await GetFileHandlerModelAsync(input, FileAccess.Read));
+            return View(await GetFileHandlerModelV2Async(input));
         }
 
         /// <summary>
@@ -32,16 +32,34 @@ namespace MarkdownFileHandler.Controllers
         public async Task<ActionResult> Open()
         {
             var input = GetActivationParameters();
-            return View(await GetFileHandlerModelAsync(input, FileAccess.Read));
+            return View(await GetFileHandlerModelV2Async(input));
         }
 
         public async Task<ActionResult> Edit()
         {
             var input = GetActivationParameters();
-            return View(await GetFileHandlerModelAsync(input, FileAccess.ReadWrite));
+            return View(await GetFileHandlerModelV2Async(input));
         }
 
         public async Task<ActionResult> Save()
+        {
+            var input = GetActivationParameters();
+            if (input == null)
+            {
+                return Json(new SaveResults() { Success = false, Error = "Missing activation parameters." });
+            }
+
+            try
+            {
+                return Json(await SaveChangesToFileContentAsync(input));
+            }
+            catch (Exception ex)
+            {
+                return Json(new SaveResults { Success = false, Error = ex.Message });
+            }
+        }
+
+        public async Task<ActionResult> GetLink()
         {
             var input = GetActivationParameters();
             if (input == null)
@@ -85,7 +103,7 @@ namespace MarkdownFileHandler.Controllers
         public async Task<ActionResult> NewFile()
         {
             var input = GetActivationParameters();
-            return View("Edit", await GetFileHandlerModelAsync(input, FileAccess.Write));
+            return View("Edit", await GetFileHandlerModelV2Async(input));
         }
 
 
@@ -149,45 +167,6 @@ namespace MarkdownFileHandler.Controllers
             return activationParameters;
         }
 
-
-
-        private async Task<MarkdownFileModel> GetFileHandlerModelAsync(FileHandlerActivationParameters input, FileAccess access)
-        {
-            if (!string.IsNullOrEmpty(input.SingleItemUrl()))
-            {
-                return await GetFileHandlerModelV2Async(input);
-            }
-
-            throw new InvalidOperationException("Something went wrong.");
-            //// Retrieve an access token so we can make API calls
-            //string accessToken = null;
-            //try
-            //{
-            //    accessToken = await AuthHelper.GetUserAccessTokenSilentAsync(input.ResourceId);
-            //}
-            //catch (Exception ex)
-            //{
-            //    return MarkdownFileModel.GetErrorModel(input, ex);
-            //}
-
-            //// Get file content
-            //Stream fileContentStream = null;
-            //try
-            //{
-            //    fileContentStream = await GetFileContentAsync(input, accessToken);
-            //}
-            //catch (Exception ex)
-            //{
-            //    return MarkdownFileModel.GetErrorModel(input, ex);
-            //}
-
-            //// Convert the stream into text for rendering
-            //StreamReader reader = new StreamReader(fileContentStream);
-            //var markdownContent = await reader.ReadToEndAsync();
-
-            //return MarkdownFileModel.GetWriteableModel(input, string.Empty, markdownContent);
-        }
-
         private async Task<SaveResults> SaveChangesToFileContentAsync(FileHandlerActivationParameters input)
         {
             // Retrieve an access token so we can make API calls
@@ -214,6 +193,34 @@ namespace MarkdownFileHandler.Controllers
                 return new SaveResults { Error = ex.Message };
             }
         }
+
+        private async Task<ShareLinkResults> GetSharingLinkToFileAsync(FileHandlerActivationParameters input)
+        {
+            // Retrieve an access token so we can make API calls
+            string accessToken = null;
+            try
+            {
+                accessToken = await AuthHelper.GetUserAccessTokenSilentAsync(input.ResourceId);
+            }
+            catch (Exception ex)
+            {
+                return new ShareLinkResults { Error = ex.Message };
+            }
+
+            return null;
+
+            //// Upload the new file content
+            //try
+            //{
+            //    var result = await HttpHelper.Default.UploadFileContentsFromStreamAsync(stream, input.SingleItemUrl(), accessToken);
+            //    return new ShareLinkResults { Success = result };
+            //}
+            //catch (Exception ex)
+            //{
+            //    return new ShareLinkResults { Error = ex.Message };
+            //}
+        }
+
 
         private async Task<SaveResults> PatchFileMetadataAsync(FileHandlerActivationParameters input)
         {

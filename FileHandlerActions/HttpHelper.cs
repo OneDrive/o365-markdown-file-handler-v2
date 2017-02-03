@@ -15,7 +15,7 @@ namespace FileHandlerActions
 
         public static readonly HttpHelper Default = new HttpHelper();
 
-        public async Task<Microsoft.OneDrive.Sdk.Item> UploadFileFromStreamAsync(Stream fileStream, string baseUrl, Microsoft.OneDrive.Sdk.ItemReference folder, string filename, string accessToken)
+        public async Task<Microsoft.Graph.DriveItem> UploadFileFromStreamAsync(Stream fileStream, string baseUrl, Microsoft.Graph.ItemReference folder, string filename, string accessToken)
         {
             if (fileStream.Length > MAX_UPLOAD_SIZE)
             {
@@ -51,7 +51,7 @@ namespace FileHandlerActions
                 throw new Exception("File stream is longer than allowed for simple PUT upload action.");
             }
 
-            var item = await GetMetadataForUrlAsync<Microsoft.OneDrive.Sdk.Item>(itemUrl, accessToken);
+            var item = await GetMetadataForUrlAsync<Microsoft.Graph.DriveItem>(itemUrl, accessToken);
 
             var baseUrl = ActionHelpers.ParseBaseUrl(itemUrl);
             var contentUrl = ActionHelpers.BuildApiUrl(baseUrl, item.ParentReference.DriveId, item.Id, "content");
@@ -64,7 +64,7 @@ namespace FileHandlerActions
 
         }
 
-        private async Task<Microsoft.OneDrive.Sdk.Item> PutFileStreamToUrlAsync(Stream fileStream, string accessToken, string contentUrl)
+        private async Task<Microsoft.Graph.DriveItem> PutFileStreamToUrlAsync(Stream fileStream, string accessToken, string contentUrl)
         {
             var requestMessage = new HttpRequestMessage(HttpMethod.Put, contentUrl);
 
@@ -80,7 +80,7 @@ namespace FileHandlerActions
             var responseMessage = await httpClient.SendAsync(requestMessage);
             responseMessage.EnsureSuccessStatusCode();
 
-            return await ParseJsonFromResponseAsync<Microsoft.OneDrive.Sdk.Item>(responseMessage);
+            return await ParseJsonFromResponseAsync<Microsoft.Graph.DriveItem>(responseMessage);
         }
 
         private async Task<T> ParseJsonFromResponseAsync<T>(HttpResponseMessage response)
@@ -111,7 +111,7 @@ namespace FileHandlerActions
 
         public async Task<FileData> GetStreamContentForItemUrlAsync(string itemUrl, string accessToken)
         {
-            var item = await GetMetadataForUrlAsync<Microsoft.OneDrive.Sdk.Item>(itemUrl, accessToken);
+            var item = await GetMetadataForUrlAsync<Microsoft.Graph.DriveItem>(itemUrl, accessToken);
             var baseUrl = ActionHelpers.ParseBaseUrl(itemUrl);
             var contentUrl = ActionHelpers.BuildApiUrl(baseUrl, item.ParentReference.DriveId, item.Id, "content");
             var stream = await GetStreamContentForUrlAsync(contentUrl, accessToken);
@@ -138,6 +138,12 @@ namespace FileHandlerActions
             ms.Seek(0, SeekOrigin.Begin);
             return ms;
         }
+
+        public async Task<string> GetSharingLinkAsync(string baseUrl)
+        {
+            throw new NotImplementedException();
+        }
+
 
     }
 

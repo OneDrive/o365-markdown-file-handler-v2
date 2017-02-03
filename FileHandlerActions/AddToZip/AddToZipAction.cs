@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.IO.Compression;
 using System.IO;
+using Microsoft.Graph;
 
 namespace FileHandlerActions.AddToZip
 {
@@ -13,7 +14,7 @@ namespace FileHandlerActions.AddToZip
         public async Task<string> DoWorkAsync(string[] sourceItemUrls, string accessToken)
         {
             string baseUrl = ActionHelpers.ParseBaseUrl(sourceItemUrls.First());
-            Microsoft.OneDrive.Sdk.Item firstItem = null;
+            DriveItem firstItem = null;
             using (var memoryStream = new MemoryStream())
             {
                 using (var archive = new ZipArchive(memoryStream, ZipArchiveMode.Create, true))
@@ -21,7 +22,7 @@ namespace FileHandlerActions.AddToZip
                     foreach(var itemUrl in sourceItemUrls)
                     {
                         // Fetch the metadata and content for this item
-                        var sourceItem = await HttpHelper.Default.GetMetadataForUrlAsync<Microsoft.OneDrive.Sdk.Item>(itemUrl, accessToken);
+                        var sourceItem = await HttpHelper.Default.GetMetadataForUrlAsync<Microsoft.Graph.DriveItem>(itemUrl, accessToken);
                         if (firstItem == null)
                             firstItem = sourceItem;
                         var result = await TryAddItemToArchiveAsync(archive, sourceItem, baseUrl, accessToken);
@@ -43,7 +44,7 @@ namespace FileHandlerActions.AddToZip
             }
         }
 
-        private async Task<bool> TryAddItemToArchiveAsync(ZipArchive archive, Microsoft.OneDrive.Sdk.Item item, string baseUrl, string accessToken)
+        private async Task<bool> TryAddItemToArchiveAsync(ZipArchive archive, Microsoft.Graph.DriveItem item, string baseUrl, string accessToken)
         {
             bool failure = false;
 
