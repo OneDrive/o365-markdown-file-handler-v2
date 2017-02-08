@@ -31,6 +31,7 @@ namespace MarkdownFileHandler
                     Authority = SettingsHelper.Authority,
                     ClientSecret = SettingsHelper.AppKey,
                     ResponseType = "code id_token",
+                    Resource = "https://graph.microsoft.com",
                     PostLogoutRedirectUri = "/",
                     TokenValidationParameters = new System.IdentityModel.Tokens.TokenValidationParameters
                     {
