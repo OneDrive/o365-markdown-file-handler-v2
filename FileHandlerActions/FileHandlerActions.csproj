@@ -65,7 +65,6 @@
     <Compile Include="AddToZip\AddToZipAction.cs" />
     <Compile Include="ConverterException.cs" />
     <Compile Include="Directory\UserInfo.cs" />
-    <Compile Include="FileHandlerUtility.cs" />
     <Compile Include="HttpHelper.cs" />
     <Compile Include="JobTracker.cs" />
     <Compile Include="ConvertToPdf\PdfConversion.cs" />

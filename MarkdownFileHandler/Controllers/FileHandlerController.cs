@@ -3,7 +3,6 @@ using MarkdownFileHandler.Models;
 using System;
 using System.IO;
 using System.Linq;
-using System.Net;
 using System.Threading.Tasks;
 using System.Web.Hosting;
 using System.Web.Mvc;

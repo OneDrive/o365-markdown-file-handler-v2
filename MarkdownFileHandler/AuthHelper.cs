@@ -1,13 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Web;
-using System.IdentityModel.Claims;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using Microsoft.IdentityModel.Clients.ActiveDirectory;
 using MarkdownFileHandler.Utils;
-using Microsoft.Owin.Security;
-using Microsoft.Owin.Security.OpenIdConnect;
 
 namespace MarkdownFileHandler
 {
