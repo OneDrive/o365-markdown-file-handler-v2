@@ -43,7 +43,7 @@ After logging into the Azure Portal, the following steps will allow you to regis
 
 After registering your app with Azure Active Directory, you can upload the file handler manifest information into the application.
 
-For detailed instructions on how to upload the file handler manifest, see [Registering file handlers](https://dev.onedrive.com/file-handler-v2/file-handlers/register-file-handler-manually.htm).
+For detailed instructions on how to upload the file handler manifest, see [Registering file handlers](https://docs.microsoft.com/en-us/onedrive/developer/file-handlers/register-manually).
 
 The file handler manifest for the sample file is available in the `addin-schema-debug.json` file in this project.
 
