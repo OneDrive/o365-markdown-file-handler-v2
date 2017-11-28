@@ -12,7 +12,7 @@ To get started with the sample, you need to complete the following actions:
 1. Register a new application with Azure Active Directory, generate an app password, and provide a redirect URI for the application.
 2. Register the file handler extensions as an add-in for your application in Azure Active Directory.
 3. Run the sample project and sign-in with your Office 365 account and accept the consent prompt so the file handler is registered for your account.
-4. Navigate to OneDrive for Business or a SharePoint document library and allow file hanlders to load.
+4. Navigate to OneDrive for Business or a SharePoint document library and allow file handlers to load.
 5. Click New, and then Markdown Document, to create a new file.
 
 ### Register a new application
@@ -24,28 +24,46 @@ After logging into the Azure Portal, the following steps will allow you to regis
 
 1. Navigate to the **Azure Active Directory** module.
 2. Select **App registrations** and click **New application registration**.
-	1. Type the name of your file handler application.
-	2. Ensure **Application Type** is set to **Web app / API**
-	3. Enter a sign-on URL for your application, for this sample use `https://localhost:44362`.
-	4. Click **Create** to create the app.
+   1. Type the name of your file handler application.
+   2. Ensure **Application Type** is set to **Web app / API**
+   3. Enter a sign-on URL for your application, for this sample use `https://localhost:44362`.
+   4. Click **Create** to create the app.
 3. After the app has been created successfully, select the app from the list of applications. It should be at the bottom of the list.
 4. Copy the **Application ID** for the app you registered and paste it into the Web.config file on the line: `<add key="ida:ClientId" value="application id here" />`
 5. Make a note of the **Object ID** for this application, since you will need this later to register the file handler manifest.
 6. Configure the application settings for this sample:
-	1. Select **Reply URLs** and ensure that `https://localhost:44362` is listed.
-	2. Select **Required Permissions** and then **Add**.
-	3. Select **Select an API** and then choose **Microsoft Graph** and click **Select**.
-	4. Find the permission **Have full access to all files user can access** and check the box next to it, then click **Select**, and then **Done**.
-	5. Select **Keys** and generate a new application key by entering a description for the key, selecting a duration, and then click **Save**. Copy the value of the displayed key since it will only be displayed once.
-		* Paste the value of the key you generated into the Web.config file in this project, inside the value for the line: `<add key="ida:ClientSecret" value="put application key here" />`
+   1. Select **Reply URLs** and ensure that `https://localhost:44362` is listed.
+   2. Select **Required Permissions** and then **Add**.
+   3. Select **Select an API** and then choose **Microsoft Graph** and click **Select**.
+   4. Find the permission **Have full access to all files user can access** and check the box next to it, then click **Select**, and then **Done**.
+   5. Select **Keys** and generate a new application key by entering a description for the key, selecting a duration, and then click **Save**. Copy the value of the displayed key since it will only be displayed once.
+      * Paste the value of the key you generated into the Web.config file in this project, inside the value for the line: `<add key="ida:ClientSecret" value="put application key here" />`
 
 ### Register the file handler manifest
 
-After registering your app with Azure Active Directory, you can upload the file hanlder manifest information into the application.
+After registering your app with Azure Active Directory, you can upload the file handler manifest information into the application.
 
-For detailed instructions on how to upload the file handler manifest, see [Registering file handlers](https://dev.onedrive.com/file-handler-v2/file-handlers/register-file-handler-manually.htm).
+For detailed instructions on how to upload the file handler manifest, see [Registering file handlers](https://docs.microsoft.com/en-us/onedrive/developer/file-handlers/register-manually).
 
 The file handler manifest for the sample file is available in the `addin-schema-debug.json` file in this project.
+
+### Register an Azure Storage instance
+
+The sample uses an Azure Storage table to cache user and token information.
+To successfully run the sample, you must provide an Azure Storage connection string in Web.config:
+
+```xml
+<add key="StorageConnectionString" value="[AzureStorageConnectionString]" />
+```
+
+To create a new storage instance and copy the connection string:
+
+1. Open the [Azure Portal](https://portal.azure.com) in your browser. You must have an Azure Subscription or trial subscription.
+2. Select **Storage Accounts** and then click **Add**.
+3. Name the storage account, leaving the defaults as they are. You will also need to create a new resource group and provide a name.
+4. Click **Create** to provision the storage account.
+5. After the storage account has finished provisioning, select it from the list of storage accounts. Click on the **Access Keys** tab, and copy the connection string for **key1**.
+6. Paste this connection string where `[AzureStorageConnectionString]` appears in Web.config.
 
 ### Run the project and sign-in
 
@@ -95,9 +113,8 @@ The file handler code will download the items, compress them into a ZIP file, an
 
 For more information about file handlers, check out the [OneDrive developer portal](https://dev.onedrive.com).
 
-For more inforamtion about Microsoft Graph API, see [Microsoft Graph](https://graph.microsoft.com).
-
+For more information about Microsoft Graph API, see [Microsoft Graph](https://graph.microsoft.com).
 
 ## License
 
-See [License](LICENSE.txt) for the license agreement convering this sample code.
+See [License](LICENSE.txt) for the license agreement covering this sample code.

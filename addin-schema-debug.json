@@ -31,7 +31,7 @@
         },
         {
           "key": "actions",
-          "value": "[{\"type\":\"newFile\",\"url\":\"https://localhost:44362/filehandler/newFile\",\"availableOn\":{\"file\":{\"extensions\":[\".gfm\"]}}},{\"type\":\"open\",\"url\":\"https://localhost:44362/filehandler/open\",\"availableOn\":{\"file\":{\"extensions\":[\".gfm\"]}}},{\"type\":\"preview\",\"url\":\"https://localhost:44362/filehandler/preview\",\"availableOn\":{\"file\":{\"extensions\":[\".gfm\"]}}}]"
+          "value": "[{\"type\":\"newFile\",\"url\":\"https://localhost:44362/filehandler/newFile\",\"availableOn\":{\"file\":{\"extensions\":[\".md\"]}}},{\"type\":\"open\",\"url\":\"https://localhost:44362/filehandler/open\",\"availableOn\":{\"file\":{\"extensions\":[\".md\"]}}},{\"type\":\"preview\",\"url\":\"https://localhost:44362/filehandler/preview\",\"availableOn\":{\"file\":{\"extensions\":[\".md\"]}}}]"
         }
       ]
     }
